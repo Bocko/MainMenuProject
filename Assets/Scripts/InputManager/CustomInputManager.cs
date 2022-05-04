@@ -8,10 +8,10 @@ using System.Collections;
 
 namespace Assets.Scripts.InputManager
 {
-    public class CustomInputManager
+    public class CustomInputManager : MonoBehaviour //should rewrite it to static class
     {
-        static Dictionary<string, KeyCode> keyMapping;
-        readonly static Dictionary<string, KeyCode> defaultkeyMapping = new Dictionary<string, KeyCode>()
+        public Dictionary<string, KeyCode> KeyMapping { get; private set; }
+        private readonly Dictionary<string, KeyCode> DefaultkeyMapping = new Dictionary<string, KeyCode>() //should be from file aka default player pre
         {
             { "Attack", KeyCode.Q },
             { "Forward", KeyCode.W },
@@ -20,42 +20,78 @@ namespace Assets.Scripts.InputManager
             { "Right", KeyCode.D }
         };
 
-        static CustomInputManager()
+        private void OnEnable()
         {
             InitializeDictionary();
         }
 
-        private static void InitializeDictionary()
+        private void OnDisable()
+        {
+            
+        }
+
+        private void InitializeDictionary()
         {
             //if player preferences null/corrupted then init default controls: (TODO: if)
-            keyMapping = new Dictionary<string, KeyCode>();
-            foreach (var keymap in defaultkeyMapping)
+            KeyMapping = new Dictionary<string, KeyCode>();
+            foreach (var keymap in DefaultkeyMapping)
             {
-                keyMapping.Add(keymap.Key, keymap.Value);
+                KeyMapping.Add(keymap.Key, keymap.Value);
             }
         }
 
-        public static void SetKeyMap(string keyMap, KeyCode key)
+        public bool GetKeyDown(string buttonName)
         {
-            if (!keyMapping.ContainsKey(keyMap))
-                throw new ArgumentException("Invalid KeyMap in SetKeyMap: " + keyMap); //should show error on UI too
-            keyMapping[keyMap] = key;
+            if (KeyMapping.ContainsKey(buttonName) == false)
+            {
+                Debug.LogError("CustomInputManager::GetButtonDown -- No button named: " + buttonName);
+                return false;
+            }
+
+            return Input.GetKeyDown(KeyMapping[buttonName]);
         }
 
-        public static bool GetKeyDown(string keyMap)
+        public bool GetKey(string buttonName)
         {
-            return Input.GetKeyDown(keyMapping[keyMap]);
+            if (KeyMapping.ContainsKey(buttonName) == false)
+            {
+                Debug.LogError("CustomInputManager::GetButtonDown -- No button named: " + buttonName);
+                return false;
+            }
+            return Input.GetKey(KeyMapping[buttonName]);
         }
 
-        public static int GetAxisRaw(string axisName) //Horizontal or Vertical
+        //not needed currently
+        public string[] GetButtonNames()
+        {
+            return KeyMapping.Keys.ToArray();
+        }
+
+        public string GetKeyNameForButton(string buttonName)
+        {
+            if (KeyMapping.ContainsKey(buttonName) == false)
+            {
+                Debug.LogError("InputManager::GetKeyNameForButton -- No button named: " + buttonName);
+                return "N/A";
+            }
+
+            return KeyMapping[buttonName].ToString();
+        }
+
+        public void SetKeyForButtonName(string buttonName, KeyCode keyCode)
+        {
+            KeyMapping[buttonName] = keyCode;
+        }
+
+        public int GetAxisRaw(string axisName) //Horizontal or Vertical
         {
             if (axisName.Equals("Horizontal"))
             {
-                if (Input.GetKey(keyMapping["Left"]) && !Input.GetKey(keyMapping["Right"]))
+                if (Input.GetKey(KeyMapping["Left"]) && !Input.GetKey(KeyMapping["Right"]))
                 {
                     return -1;
                 }
-                else if (!Input.GetKey(keyMapping["Left"]) && Input.GetKey(keyMapping["Right"]))
+                else if (!Input.GetKey(KeyMapping["Left"]) && Input.GetKey(KeyMapping["Right"]))
                 {
                     return 1;
                 }
@@ -63,11 +99,11 @@ namespace Assets.Scripts.InputManager
             }
             else if (axisName.Equals("Vertical"))
             {
-                if (Input.GetKey(keyMapping["Backward"]) && !Input.GetKey(keyMapping["Forward"]))
+                if (Input.GetKey(KeyMapping["Backward"]) && !Input.GetKey(KeyMapping["Forward"]))
                 {
                     return -1;
                 }
-                else if (!Input.GetKey(keyMapping["Backward"]) && Input.GetKey(keyMapping["Forward"]))
+                else if (!Input.GetKey(KeyMapping["Backward"]) && Input.GetKey(KeyMapping["Forward"]))
                 {
                     return 1;
                 }
