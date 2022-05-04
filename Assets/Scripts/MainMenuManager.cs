@@ -44,7 +44,6 @@ public class MainMenuManager : MonoBehaviour
                 case MenuPage.CONFIRMEXIT:
                 {
                     HideConfirmExit();
-                    Application.Quit();
                     break;
                 }
             }

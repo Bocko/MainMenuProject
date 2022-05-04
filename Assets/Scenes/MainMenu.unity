@@ -7974,10 +7974,10 @@ MonoBehaviour:
   m_FillRect: {fileID: 1830608685}
   m_HandleRect: {fileID: 204983141}
   m_Direction: 0
-  m_MinValue: 39
-  m_MaxValue: 200
+  m_MinValue: 40
+  m_MaxValue: 201
   m_WholeNumbers: 1
-  m_Value: 39
+  m_Value: 201
   m_OnValueChanged:
     m_PersistentCalls:
       m_Calls:

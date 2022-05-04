@@ -69,14 +69,14 @@ namespace Assets.Scripts
             TargetFrameRateSlider.onValueChanged.RemoveListener(SetTargetFrameRate);
         }
 
-        public void SetQuality(int indexFromDropdown)
+        private void SetQuality(int indexFromDropdown)
         {
             QualitySettings.SetQualityLevel(indexFromDropdown);
         }
 
-        public void SetTargetFrameRate(float volume)
+        private void SetTargetFrameRate(float volume)
         {
-            if (volume < 40)
+            if (volume > 200)
             {
                 Application.targetFrameRate = -1;    //-1 equals unlimited
                 TargetFrameRateValueText.text = "Unlimited";
@@ -86,7 +86,7 @@ namespace Assets.Scripts
             TargetFrameRateValueText.text = volume.ToString();
         }
 
-        public void SetAnitAliasing(int index)
+        private void SetAnitAliasing(int index)
         {
             //valid numbers: 0, 2, 4, 8
             switch (index)
@@ -106,7 +106,7 @@ namespace Assets.Scripts
             }
         }
 
-        public void SetAmbientOcclusionQuality(int index)
+        private void SetAmbientOcclusionQuality(int index)
         {
             if (index != 0)
             {
@@ -135,7 +135,7 @@ namespace Assets.Scripts
             }
         }
 
-        public void SetMotionBlur(bool on)
+        private void SetMotionBlur(bool on)
         {
             MotionBlur.active = on;
         }
