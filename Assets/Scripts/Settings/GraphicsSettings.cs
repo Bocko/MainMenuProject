@@ -140,17 +140,17 @@ namespace Assets.Scripts
             MotionBlur.active = on;
         }
 
-        public void ApplySettings()
+        private void ApplySettings()
         {
             //for graphic settings onclick methods should only save the values, then call the current set methods here
         }
 
-        public void ResetSettings()
+        private void ResetSettings()
         {
             //ResetSettings settings back to default
         }
 
-        public void CancelChanges()
+        private void CancelChanges()
         {
             //set the values on UI back to playerPrefs
             //shoud use this or ApplySettings() on menuchange

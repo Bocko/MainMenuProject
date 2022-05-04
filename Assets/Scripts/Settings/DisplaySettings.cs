@@ -60,34 +60,34 @@ namespace Assets.Scripts
             FullScreenModeCheckbox.onValueChanged.RemoveListener(SetFullscreenMode);
         }
 
-        public void SetResolution(int resolutionIdenx)
+        private void SetResolution(int resolutionIdenx)
         {
             Resolution currentResoulution = Resolutions[resolutionIdenx];
             Screen.SetResolution(currentResoulution.width, currentResoulution.height, Screen.fullScreen);
         }
 
-        public void SetFullscreenMode(bool isFullscreen)
+        private void SetFullscreenMode(bool isFullscreen)
         {
             Screen.fullScreen = isFullscreen;
         }
 
-        public void SetBrightness(float value)
+        private void SetBrightness(float value)
         {
             Screen.brightness = value;
             BrightnessTextValue.text = value.ToString("0.0");
         }
 
-        public void ApplySettings()
+        private void ApplySettings()
         {
             //set playerperfs to values shown on UI
         }
 
-        public void ResetSettings()
+        private void ResetSettings()
         {
             //ResetSettings settings back to default
         }
 
-        public void CancelChanges()
+        private void CancelChanges()
         {
             //set the settings & the values on UI back to playerPrefs
             //shoud use this or ApplySettings() on menuchange

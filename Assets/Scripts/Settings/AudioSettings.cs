@@ -52,36 +52,36 @@ namespace Assets.Scripts
             EffectsVolumeSlider.onValueChanged.RemoveAllListeners();
         }
 
-        public void SetMasterVolume(float volume)
+        private void SetMasterVolume(float volume)
         {
             //AudioListener.volume = volume;
             AudioMixer.SetFloat("Master", Mathf.Log10(volume) * 30);
             MasterVolumeTextValue.text = (volume * 100).ToString("0");
         }
-        
-        public void SetMusicVolume(float volume)
+
+        private void SetMusicVolume(float volume)
         {
             AudioMixer.SetFloat("Music", Mathf.Log10(volume) * 30);
             MusicVolumeTextValue.text = (volume * 100).ToString("0");
         }
-        
-        public void SetEffectsVolume(float volume)
+
+        private void SetEffectsVolume(float volume)
         {
             AudioMixer.SetFloat("Effects", Mathf.Log10(volume) * 30);
             EffectsVolumeTextValue.text = (volume * 100).ToString("0");
         }
 
-        public void ApplySettings()
+        private void ApplySettings()
         {
             //set playerperfs to values shown on UI
         }
 
-        public void ResetSettings()
+        private void ResetSettings()
         {
             //Reset settings back to default
         }
 
-        public void CancelChanges()
+        private void CancelChanges()
         {
             //set the settings & the values on UI back to playerPrefs
             //shoud use this or ApplySettings() on menuchange

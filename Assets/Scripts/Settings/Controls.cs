@@ -9,8 +9,6 @@ namespace Assets.Scripts
 {
     public class Controls : MonoBehaviour
     {
-        // private float MouseSensitivity; akár lehet ezt is de ez játékfüggö, h hogy kell
-        
         //Control mapping:
 
         //With old input sys:
@@ -19,17 +17,17 @@ namespace Assets.Scripts
 
         //With new input sys: has several methods
 
-        public void ApplySettings()
+        private void ApplySettings()
         {
             //set playerperfs to values shown on UI
         }
 
-        public void ResetSettings()
+        private void ResetSettings()
         {
             //Reset settings back to default
         }
 
-        public void CancelChanges()
+        private void CancelChanges()
         {
             //set the settings & the values on UI back to playerPrefs
             //shoud use this or ApplySettings() on menuchange
