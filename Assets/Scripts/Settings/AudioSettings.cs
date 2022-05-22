@@ -7,6 +7,7 @@ using TMPro;
 using UnityEngine;
 using UnityEngine.Audio;
 using UnityEngine.UI;
+using UnityEngine.Events;
 
 namespace Assets.Scripts
 {
@@ -25,31 +26,49 @@ namespace Assets.Scripts
         [SerializeField] private TextMeshProUGUI EffectsVolumeTextValue;
         [SerializeField] private Slider EffectsVolumeSlider;
 
+        [SerializeField] private Button applyButton;
+        [SerializeField] private Button resetButton;
+
+        private UnityAction applyAction;
+        private UnityAction resetAction;
+
+        private void Awake()
+        {
+            applyAction = new UnityAction(ApplySettings);
+            resetAction = new UnityAction(ResetSettings);
+        }
+
         private void Start()
         {
             //UI valueinitializations here (should be form Default Stetting / Player Preferences / Currently applied options)
-            MasterVolumeTextValue.text = "100";
-            MusicVolumeTextValue.text = "100";
-            EffectsVolumeTextValue.text = "100";
+            LoadPlayerPrefs();
         }
 
         private void OnEnable()
         {
+            applyButton.onClick.AddListener(applyAction);
+            resetButton.onClick.AddListener(resetAction);
+
             MasterVolumeSlider.onValueChanged.AddListener(SetMasterVolume);
             SetMasterVolume(MasterVolumeSlider.value);
 
             MusicVolumeSlider.onValueChanged.AddListener(SetMusicVolume);
-            SetMasterVolume(MusicVolumeSlider.value);
+            SetMusicVolume(MusicVolumeSlider.value);
 
             EffectsVolumeSlider.onValueChanged.AddListener(SetEffectsVolume);
-            SetMasterVolume(EffectsVolumeSlider.value);
+            SetEffectsVolume(EffectsVolumeSlider.value);
         }
 
         private void OnDisable()
         {
+            applyButton.onClick.RemoveListener(applyAction);
+            resetButton.onClick.RemoveListener(resetAction);
+
             MasterVolumeSlider.onValueChanged.RemoveAllListeners();
             MusicVolumeSlider.onValueChanged.RemoveAllListeners();
             EffectsVolumeSlider.onValueChanged.RemoveAllListeners();
+
+            CancelChanges();
         }
 
         private void SetMasterVolume(float volume)
@@ -71,18 +90,34 @@ namespace Assets.Scripts
             EffectsVolumeTextValue.text = (volume * 100).ToString("0");
         }
 
+        private void LoadPlayerPrefs()
+        {
+            MasterVolumeSlider.value = SettingsPlayerPrefs.LoadVolume(SettingsPlayerPrefs.Volumes.MASTER);
+            EffectsVolumeSlider.value = SettingsPlayerPrefs.LoadVolume(SettingsPlayerPrefs.Volumes.EFFECT);
+            MusicVolumeSlider.value = SettingsPlayerPrefs.LoadVolume(SettingsPlayerPrefs.Volumes.MUSIC);
+        }
+
         private void ApplySettings()
         {
+            print("saving audio");
+            SettingsPlayerPrefs.SaveVolume(MasterVolumeSlider.value, SettingsPlayerPrefs.Volumes.MASTER);
+            SettingsPlayerPrefs.SaveVolume(EffectsVolumeSlider.value, SettingsPlayerPrefs.Volumes.EFFECT);
+            SettingsPlayerPrefs.SaveVolume(MusicVolumeSlider.value, SettingsPlayerPrefs.Volumes.MUSIC);
             //set playerperfs to values shown on UI
         }
 
         private void ResetSettings()
         {
-            //Reset settings back to default
+            print("reseting audio");
+            MasterVolumeSlider.value = SettingsPlayerPrefs.defaultVolume;
+            EffectsVolumeSlider.value = SettingsPlayerPrefs.defaultVolume;
+            MusicVolumeSlider.value = SettingsPlayerPrefs.defaultVolume;
         }
 
         private void CancelChanges()
         {
+            print("canceling audio");
+            LoadPlayerPrefs();
             //set the settings & the values on UI back to playerPrefs
             //shoud use this or ApplySettings() on menuchange
         }

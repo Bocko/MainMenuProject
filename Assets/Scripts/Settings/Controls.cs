@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
+using UnityEngine.Events;
 
 namespace Assets.Scripts
 {
@@ -16,13 +17,33 @@ namespace Assets.Scripts
         private string CurrnetlyPressedButtonName = null;
         private Button CurrnetlyPressedButton = null;
 
+        private bool keysSpawned = false;
+
         [SerializeField] private GameObject KeyItemPrefab; //scriptable object?
         [SerializeField] private GameObject KeyItemList;
 
         [SerializeField] private CustomInputManager InputManager;
 
+        [SerializeField] private Button applyButton;
+        [SerializeField] private Button resetButton;
+
+        private UnityAction applyAction;
+        private UnityAction resetAction;
+
+        private void Awake()
+        {
+            applyAction = new UnityAction(ApplySettings);
+            resetAction = new UnityAction(ResetSettings);
+        }
+
         private void OnEnable()
         {
+            applyButton.onClick.AddListener(applyAction);
+            resetButton.onClick.AddListener(resetAction);
+
+            if(keysSpawned) { return; }
+            keysSpawned = true;
+
             foreach (var keyValuePair in InputManager.KeyMapping)
             {
                 //instantiate the keys
@@ -48,6 +69,9 @@ namespace Assets.Scripts
 
         private void OnDisable()
         {
+            applyButton.onClick.RemoveListener(applyAction);
+            resetButton.onClick.RemoveListener(resetAction);
+
             RemoveAllListenersFromButtons();
         }
 
@@ -103,11 +127,13 @@ namespace Assets.Scripts
 
         private void ApplySettings()
         {
+            print("saving controls");
             //set playerperfs to values shown on UI
         }
 
         private void ResetSettings()
         {
+            print("reseting controls");
             //Reset settings back to default
         }
 
