@@ -61,14 +61,14 @@ namespace Assets.Scripts
 
         private void OnDisable()
         {
+            CancelChanges();
+
             applyButton.onClick.RemoveListener(applyAction);
             resetButton.onClick.RemoveListener(resetAction);
 
             MasterVolumeSlider.onValueChanged.RemoveAllListeners();
             MusicVolumeSlider.onValueChanged.RemoveAllListeners();
             EffectsVolumeSlider.onValueChanged.RemoveAllListeners();
-
-            CancelChanges();
         }
 
         private void SetMasterVolume(float volume)
@@ -92,6 +92,7 @@ namespace Assets.Scripts
 
         private void LoadPlayerPrefs()
         {
+            print("load audio");
             MasterVolumeSlider.value = SettingsPlayerPrefs.LoadVolume(SettingsPlayerPrefs.Volumes.MASTER);
             EffectsVolumeSlider.value = SettingsPlayerPrefs.LoadVolume(SettingsPlayerPrefs.Volumes.EFFECT);
             MusicVolumeSlider.value = SettingsPlayerPrefs.LoadVolume(SettingsPlayerPrefs.Volumes.MUSIC);

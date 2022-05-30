@@ -5360,7 +5360,7 @@ MonoBehaviour:
       m_Calls:
       - m_Target: {fileID: 291714177}
         m_TargetAssemblyTypeName: MainMenuManager, Assembly-CSharp
-        m_MethodName: Exit
+        m_MethodName: ConfirmExit
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
@@ -7063,6 +7063,8 @@ MonoBehaviour:
   BrightnessSlider: {fileID: 2225392}
   FullScreenModeCheckbox: {fileID: 2128195874}
   ResolutionDropdown: {fileID: 1919939557}
+  applyButton: {fileID: 799257228}
+  resetButton: {fileID: 1701626608}
 --- !u!1 &928969226
 GameObject:
   m_ObjectHideFlags: 0

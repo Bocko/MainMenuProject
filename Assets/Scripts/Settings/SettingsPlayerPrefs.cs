@@ -18,7 +18,7 @@ public class SettingsPlayerPrefs : MonoBehaviour
     private const string resolutionIndexKey = "resIndex";
     public static int defaultResIndex = Screen.resolutions.Length - 1;
     private const string brightnessKey = "brightness";
-    public static float defaultBrightness = 1;
+    public static float defaultBrightness = 0.5f;
     private const string isFullscreenKey = "isFullscreen";
     public static int defaultIsFullscreen = 1;//0 = false, 1 = true
 
@@ -61,32 +61,35 @@ public class SettingsPlayerPrefs : MonoBehaviour
 
     public static void SaveResolution(int resIndex)
     {
-        PlayerPrefs.SetInt(resolutionIndexKey,resIndex);
+        PlayerPrefs.SetInt(resolutionIndexKey, resIndex);
+        PlayerPrefs.Save();
     }
 
     public static int LoadResolution()
     {
-        return PlayerPrefs.GetInt(resolutionIndexKey);
+        return PlayerPrefs.GetInt(resolutionIndexKey, defaultResIndex);
     }
 
     public static void SaveBrightness(float brightness)
     {
         PlayerPrefs.SetFloat(brightnessKey, brightness);
+        PlayerPrefs.Save();
     }
 
     public static float LoadBrightness()
     {
-        return PlayerPrefs.GetFloat(brightnessKey);
+        return PlayerPrefs.GetFloat(brightnessKey, defaultBrightness);
     }
 
     public static void SaveIsFullScreen(int isFullscreen)
     {
         PlayerPrefs.SetInt(isFullscreenKey, isFullscreen);
+        PlayerPrefs.Save();
     }
 
     public static int LoadIsFullscreen()
     {
-        return PlayerPrefs.GetInt(isFullscreenKey);
+        return PlayerPrefs.GetInt(isFullscreenKey, defaultIsFullscreen);
     }
 
     #endregion

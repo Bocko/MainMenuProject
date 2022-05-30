@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
+using UnityEngine.Events;
 
 namespace Assets.Scripts
 {
@@ -19,6 +20,18 @@ namespace Assets.Scripts
         [SerializeField] private Resolution[] Resolutions;
         [SerializeField] private TMP_Dropdown ResolutionDropdown;
 
+        [SerializeField] private Button applyButton;
+        [SerializeField] private Button resetButton;
+
+        private UnityAction applyAction;
+        private UnityAction resetAction;
+
+        private void Awake()
+        {
+            applyAction = new UnityAction(ApplySettings);
+            resetAction = new UnityAction(ResetSettings);
+        }
+
         private void Start()
         {
             //Resolution:
@@ -30,7 +43,7 @@ namespace Assets.Scripts
             int currentResolutionIndex = 0;
             for (int i = 0; i < Resolutions.Length; i++)
             {
-                string option = Resolutions[i].width + " x " + Resolutions[i].height;
+                string option = Resolutions[i].width + " x " + Resolutions[i].height + " - " + Resolutions[i].refreshRate + "hz";
                 options.Add(option);
 
                 if (Resolutions[i].width == Screen.currentResolution.width &&
@@ -44,10 +57,14 @@ namespace Assets.Scripts
             ResolutionDropdown.RefreshShownValue();
 
             //Add UI valueinitializations here (should be form Default Stetting / Player Preferences / Currently applied options)
+            LoadPlayerPrefs();
         }
 
         private void OnEnable()
         {
+            applyButton.onClick.AddListener(applyAction);
+            resetButton.onClick.AddListener(resetAction);
+
             ResolutionDropdown.onValueChanged.AddListener(SetResolution);
             BrightnessSlider.onValueChanged.AddListener(SetBrightness);
             FullScreenModeCheckbox.onValueChanged.AddListener(SetFullscreenMode);
@@ -55,14 +72,19 @@ namespace Assets.Scripts
 
         private void OnDisable()
         {
-            ResolutionDropdown.onValueChanged.RemoveListener(SetResolution);
-            BrightnessSlider.onValueChanged.RemoveListener(SetBrightness);
-            FullScreenModeCheckbox.onValueChanged.RemoveListener(SetFullscreenMode);
+            CancelChanges();
+
+            applyButton.onClick.RemoveListener(applyAction);
+            resetButton.onClick.RemoveListener(resetAction);
+
+            ResolutionDropdown.onValueChanged.RemoveAllListeners();
+            BrightnessSlider.onValueChanged.RemoveAllListeners();
+            FullScreenModeCheckbox.onValueChanged.RemoveAllListeners();
         }
 
-        private void SetResolution(int resolutionIdenx)
+        private void SetResolution(int resolutionIndex)
         {
-            Resolution currentResoulution = Resolutions[resolutionIdenx];
+            Resolution currentResoulution = Resolutions[resolutionIndex];
             Screen.SetResolution(currentResoulution.width, currentResoulution.height, Screen.fullScreen);
         }
 
@@ -77,20 +99,37 @@ namespace Assets.Scripts
             BrightnessTextValue.text = value.ToString("0.0");
         }
 
+        private void LoadPlayerPrefs()
+        {
+            print("load display");
+            FullScreenModeCheckbox.isOn = SettingsPlayerPrefs.LoadIsFullscreen() == 1;
+            ResolutionDropdown.value = SettingsPlayerPrefs.LoadResolution();
+            BrightnessSlider.value = SettingsPlayerPrefs.LoadBrightness();
+        }
+
         private void ApplySettings()
         {
+            print("apply display");
             //set playerperfs to values shown on UI
+            SettingsPlayerPrefs.SaveResolution(ResolutionDropdown.value);
+            SettingsPlayerPrefs.SaveBrightness(BrightnessSlider.value);
+            SettingsPlayerPrefs.SaveIsFullScreen(FullScreenModeCheckbox.isOn ? 1 : 0);
         }
 
         private void ResetSettings()
         {
+            print("reset display");
             //ResetSettings settings back to default
+            FullScreenModeCheckbox.isOn = SettingsPlayerPrefs.defaultIsFullscreen == 1;
+            ResolutionDropdown.value = SettingsPlayerPrefs.defaultResIndex;
+            BrightnessSlider.value = SettingsPlayerPrefs.defaultBrightness;
         }
 
         private void CancelChanges()
         {
             //set the settings & the values on UI back to playerPrefs
             //shoud use this or ApplySettings() on menuchange
+            LoadPlayerPrefs();
         }
     }
 }
