@@ -113,6 +113,7 @@ namespace Assets.Scripts
             MasterVolumeSlider.value = SettingsPlayerPrefs.defaultVolume;
             EffectsVolumeSlider.value = SettingsPlayerPrefs.defaultVolume;
             MusicVolumeSlider.value = SettingsPlayerPrefs.defaultVolume;
+            ApplySettings();
         }
 
         private void CancelChanges()
