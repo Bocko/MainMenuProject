@@ -7,9 +7,11 @@ using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.Events;
+using System.Collections;
 
 namespace Assets.Scripts
 {
+    //modified the original function to only apply settings when the apply button is pressed
     public class DisplaySettings : MonoBehaviour
     {
         [SerializeField] private TextMeshProUGUI BrightnessTextValue;
@@ -65,9 +67,7 @@ namespace Assets.Scripts
             applyButton.onClick.AddListener(applyAction);
             resetButton.onClick.AddListener(resetAction);
 
-            ResolutionDropdown.onValueChanged.AddListener(SetResolution);
             BrightnessSlider.onValueChanged.AddListener(SetBrightness);
-            FullScreenModeCheckbox.onValueChanged.AddListener(SetFullscreenMode);
         }
 
         private void OnDisable()
@@ -77,40 +77,35 @@ namespace Assets.Scripts
             applyButton.onClick.RemoveListener(applyAction);
             resetButton.onClick.RemoveListener(resetAction);
 
-            ResolutionDropdown.onValueChanged.RemoveAllListeners();
             BrightnessSlider.onValueChanged.RemoveAllListeners();
-            FullScreenModeCheckbox.onValueChanged.RemoveAllListeners();
-        }
-
-        private void SetResolution(int resolutionIndex)
-        {
-            Resolution currentResoulution = Resolutions[resolutionIndex];
-            Screen.SetResolution(currentResoulution.width, currentResoulution.height, Screen.fullScreen);
-        }
-
-        private void SetFullscreenMode(bool isFullscreen)
-        {
-            Screen.fullScreen = isFullscreen;
         }
 
         private void SetBrightness(float value)
         {
-            Screen.brightness = value;
             BrightnessTextValue.text = value.ToString("0.0");
         }
 
         private void LoadPlayerPrefs()
         {
+            //loads playerprefs and applys them
+
             print("load display");
+
             FullScreenModeCheckbox.isOn = SettingsPlayerPrefs.LoadIsFullscreen() == 1;
-            ResolutionDropdown.value = SettingsPlayerPrefs.LoadResolution();
             BrightnessSlider.value = SettingsPlayerPrefs.LoadBrightness();
+            ResolutionDropdown.value = SettingsPlayerPrefs.LoadResolution();
+
+            StartCoroutine(ApplyDisplaySettings());
         }
 
         private void ApplySettings()
         {
+            //set playerperfs to values shown on UI AND sets the settings to match the UI
+
             print("apply display");
-            //set playerperfs to values shown on UI
+
+            StartCoroutine(ApplyDisplaySettings());
+
             SettingsPlayerPrefs.SaveResolution(ResolutionDropdown.value);
             SettingsPlayerPrefs.SaveBrightness(BrightnessSlider.value);
             SettingsPlayerPrefs.SaveIsFullScreen(FullScreenModeCheckbox.isOn ? 1 : 0);
@@ -118,18 +113,35 @@ namespace Assets.Scripts
 
         private void ResetSettings()
         {
-            print("reset display");
             //ResetSettings settings back to default
+
+            print("reset display");
             FullScreenModeCheckbox.isOn = SettingsPlayerPrefs.defaultIsFullscreen == 1;
-            ResolutionDropdown.value = SettingsPlayerPrefs.defaultResIndex;
             BrightnessSlider.value = SettingsPlayerPrefs.defaultBrightness;
+            ResolutionDropdown.value = SettingsPlayerPrefs.defaultResIndex;
+
+            ApplySettings();
         }
 
         private void CancelChanges()
         {
-            //set the settings & the values on UI back to playerPrefs
-            //shoud use this or ApplySettings() on menuchange
+            //canceling when switching tabs
             LoadPlayerPrefs();
+        }
+
+        IEnumerator ApplyDisplaySettings()//changing settings based on ui
+        {
+            //this coroutine is needed because for some reason you cant change the fullscreen variable and resolution in the same frame
+            //https://answers.unity.com/questions/765780/screensetresolution-and-full-screen-not-behaving-c.html
+
+            Screen.fullScreen = FullScreenModeCheckbox.isOn;
+            Screen.brightness = BrightnessSlider.value;
+
+            yield return new WaitForEndOfFrame();
+            yield return new WaitForEndOfFrame();
+
+            Resolution currentResoulution = Resolutions[ResolutionDropdown.value];
+            Screen.SetResolution(currentResoulution.width, currentResoulution.height, Screen.fullScreen, currentResoulution.refreshRate);
         }
     }
 }
