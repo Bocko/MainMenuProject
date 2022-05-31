@@ -2,6 +2,7 @@
 using UnityEngine;
 using UnityEngine.Rendering.PostProcessing;
 using UnityEngine.UI;
+using UnityEngine.Events;
 
 namespace Assets.Scripts
 {
@@ -38,6 +39,18 @@ namespace Assets.Scripts
 
         */
 
+        [SerializeField] private Button applyButton;
+        [SerializeField] private Button resetButton;
+
+        private UnityAction applyAction;
+        private UnityAction resetAction;
+
+        private void Awake()
+        {
+            applyAction = new UnityAction(ApplySettings);
+            resetAction = new UnityAction(ResetSettings);
+        }
+
         private void Start()
         {
             PostProcessVolume.profile.TryGetSettings(out AmbientOcclusion);
@@ -48,6 +61,9 @@ namespace Assets.Scripts
 
         private void OnEnable()
         {
+            applyButton.onClick.AddListener(applyAction);
+            resetButton.onClick.AddListener(resetAction);
+
             AmbientOcclusionDorpdown.onValueChanged.AddListener(SetAmbientOcclusionQuality);
             AntiAliasingDropdown.onValueChanged.AddListener(SetAnitAliasing);
             MotionBlurCheckbox.onValueChanged.AddListener(SetMotionBlur);
@@ -57,6 +73,9 @@ namespace Assets.Scripts
 
         private void OnDisable()
         {
+            applyButton.onClick.RemoveListener(applyAction);
+            resetButton.onClick.RemoveListener(resetAction);
+
             AmbientOcclusionDorpdown.onValueChanged.RemoveListener(SetAmbientOcclusionQuality);
             AntiAliasingDropdown.onValueChanged.RemoveListener(SetAnitAliasing);
             MotionBlurCheckbox.onValueChanged.RemoveListener(SetMotionBlur);
