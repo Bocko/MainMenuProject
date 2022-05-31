@@ -46,11 +46,11 @@ public class SettingsPlayerPrefs : MonoBehaviour
         switch (volume)
         {
             case Volumes.MASTER:
-                return PlayerPrefs.HasKey(masterVolumeKey) ? PlayerPrefs.GetFloat(masterVolumeKey) : defaultVolume;
+                return PlayerPrefs.GetFloat(masterVolumeKey, defaultVolume);
             case Volumes.EFFECT:
-                return PlayerPrefs.HasKey(effectVolumeKey) ? PlayerPrefs.GetFloat(effectVolumeKey) : defaultVolume;
+                return PlayerPrefs.GetFloat(effectVolumeKey, defaultVolume);
             case Volumes.MUSIC:
-                return PlayerPrefs.HasKey(musicVolumeKey) ? PlayerPrefs.GetFloat(musicVolumeKey) : defaultVolume;
+                return PlayerPrefs.GetFloat(musicVolumeKey, defaultVolume);
         }
         return 0;// nOt AlL cOdE pAtHs rEtUrN VaLuE
     }
