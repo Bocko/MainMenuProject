@@ -21,6 +21,18 @@ public class SettingsPlayerPrefs : MonoBehaviour
     private const string isFullscreenKey = "isFullscreen";
     public static int defaultIsFullscreen = 1;//0 = false, 1 = true
 
+    //graphics
+    private const string framerateKey = "framerate";
+    public static int defaultFramerate = 201;//40-200 and 201 is unlimited
+    private const string qualityIndexKey = "qualityIndex";
+    public static int defaultQualityIndex = 1;
+    private const string antiAliasingIndexKey = "antiAliasingIndex";
+    public static int defaultAntiAliasingIndex = 2;
+    private const string ambientOcclusionIndexKey = "ambientOcclusionIndex";
+    public static int defaultAmbientOcclusionIndex = 3;
+    private const string motionBlurKey = "motionBlur";
+    public static int defaultMotionBlur = 0;//0 = false, 1 = true
+
     #region AUDIO
 
     public static void SaveVolume(float value, Volumes volume)
@@ -80,15 +92,73 @@ public class SettingsPlayerPrefs : MonoBehaviour
         return PlayerPrefs.GetFloat(brightnessKey, defaultBrightness);
     }
 
-    public static void SaveIsFullScreen(int isFullscreen)
+    public static void SaveIsFullScreen(bool isFullscreen)
     {
-        PlayerPrefs.SetInt(isFullscreenKey, isFullscreen);
+        PlayerPrefs.SetInt(isFullscreenKey, isFullscreen ? 1 : 0);
         PlayerPrefs.Save();
     }
 
-    public static int LoadIsFullscreen()
+    public static bool LoadIsFullscreen()
     {
-        return PlayerPrefs.GetInt(isFullscreenKey, defaultIsFullscreen);
+        return PlayerPrefs.GetInt(isFullscreenKey, defaultIsFullscreen) == 1;
+    }
+
+    #endregion
+
+    #region GRAPHICS
+
+    public static void SaveFramerate(int framerate)
+    {
+        PlayerPrefs.SetInt(framerateKey, framerate);
+        PlayerPrefs.Save();
+    }
+
+    public static int LoadFramerate()
+    {
+        return PlayerPrefs.GetInt(framerateKey, defaultFramerate);
+    }
+
+    public static void SaveQuality(int qualityIndex)
+    {
+        PlayerPrefs.SetInt(qualityIndexKey, qualityIndex);
+        PlayerPrefs.Save();
+    }
+
+    public static int LoadQuality()
+    {
+        return PlayerPrefs.GetInt(qualityIndexKey, defaultQualityIndex);
+    }
+
+    public static void SaveAntiAliasing(int antiAliasingIndex)
+    {
+        PlayerPrefs.SetInt(antiAliasingIndexKey, antiAliasingIndex);
+        PlayerPrefs.Save();
+    }
+
+    public static int LoadAntiAliasing()
+    {
+        return PlayerPrefs.GetInt(antiAliasingIndexKey, defaultAntiAliasingIndex);
+    }
+
+    public static void SaveAmbientOcclusion(int ambientOcclusionIndex)
+    {
+        PlayerPrefs.SetInt(ambientOcclusionIndexKey, ambientOcclusionIndex);
+        PlayerPrefs.Save();
+    }
+
+    public static int LoadAmbientOcclusion()
+    {
+        return PlayerPrefs.GetInt(ambientOcclusionIndexKey, defaultAmbientOcclusionIndex);
+    }
+
+    public static void SaveMotionBlur(bool motionBlur)
+    {
+        PlayerPrefs.SetInt(motionBlurKey, motionBlur ? 1 : 0);
+    }
+
+    public static bool LoadMotionBlur()
+    {
+        return PlayerPrefs.GetInt(motionBlurKey, defaultMotionBlur) == 1;
     }
 
     #endregion

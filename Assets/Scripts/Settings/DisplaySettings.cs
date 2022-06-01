@@ -87,7 +87,7 @@ namespace Assets.Scripts
 
             print("load display");
 
-            FullScreenModeCheckbox.isOn = SettingsPlayerPrefs.LoadIsFullscreen() == 1;
+            FullScreenModeCheckbox.isOn = SettingsPlayerPrefs.LoadIsFullscreen();
             BrightnessSlider.value = SettingsPlayerPrefs.LoadBrightness();
             ResolutionDropdown.value = SettingsPlayerPrefs.LoadResolution();
 
@@ -104,7 +104,7 @@ namespace Assets.Scripts
 
             SettingsPlayerPrefs.SaveResolution(ResolutionDropdown.value);
             SettingsPlayerPrefs.SaveBrightness(BrightnessSlider.value);
-            SettingsPlayerPrefs.SaveIsFullScreen(FullScreenModeCheckbox.isOn ? 1 : 0);
+            SettingsPlayerPrefs.SaveIsFullScreen(FullScreenModeCheckbox.isOn);
         }
 
         private void ResetSettings()
