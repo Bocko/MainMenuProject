@@ -159,6 +159,9 @@ namespace Assets.Scripts
 
         private void LoadPlayerPrefs()
         {
+            //loads graphics
+            print("load graphics");
+
             TargetFrameRateSlider.value = SettingsPlayerPrefs.LoadFramerate();
             QualityDropdown.value = SettingsPlayerPrefs.LoadQuality();
             AntiAliasingDropdown.value = SettingsPlayerPrefs.LoadAntiAliasing();
@@ -166,10 +169,10 @@ namespace Assets.Scripts
             MotionBlurCheckbox.isOn = SettingsPlayerPrefs.LoadMotionBlur();
         }
 
-        private void ApplySettings()
+        private void SavePlayerPrefs()
         {
-            //for graphic settings onclick methods should only save the values, then call the current set methods here
-            print("graphics apply");
+            //saves graphics
+            print("save graphics");
 
             SettingsPlayerPrefs.SaveFramerate((int)TargetFrameRateSlider.value);
             SettingsPlayerPrefs.SaveQuality(QualityDropdown.value);
@@ -178,16 +181,30 @@ namespace Assets.Scripts
             SettingsPlayerPrefs.SaveMotionBlur(MotionBlurCheckbox.isOn);
         }
 
-        private void ResetSettings()
+        private void ResetPlayerPrefs()
         {
-            //ResetSettings settings back to default
-            print("graphics reset");
+            //resets graphics
+            print("reset graphics");
 
             TargetFrameRateSlider.value = SettingsPlayerPrefs.defaultFramerate;
             QualityDropdown.value = SettingsPlayerPrefs.defaultQualityIndex;
             AntiAliasingDropdown.value = SettingsPlayerPrefs.defaultAntiAliasingIndex;
             AmbientOcclusionDorpdown.value = SettingsPlayerPrefs.defaultAmbientOcclusionIndex;
             MotionBlurCheckbox.isOn = SettingsPlayerPrefs.defaultMotionBlur == 1;
+        }
+
+        private void ApplySettings()
+        {
+            //for graphic settings onclick methods should only save the values, then call the current set methods here
+
+            SavePlayerPrefs();
+        }
+
+        private void ResetSettings()
+        {
+            //ResetSettings settings back to default
+
+            ResetPlayerPrefs();
         }
 
         private void CancelChanges()

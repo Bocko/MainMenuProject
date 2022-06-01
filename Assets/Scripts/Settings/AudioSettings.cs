@@ -87,36 +87,52 @@ namespace Assets.Scripts
 
         private void LoadPlayerPrefs()
         {
+            //loads audio
             print("load audio");
+
             MasterVolumeSlider.value = SettingsPlayerPrefs.LoadVolume(SettingsPlayerPrefs.Volumes.MASTER);
             EffectsVolumeSlider.value = SettingsPlayerPrefs.LoadVolume(SettingsPlayerPrefs.Volumes.EFFECT);
             MusicVolumeSlider.value = SettingsPlayerPrefs.LoadVolume(SettingsPlayerPrefs.Volumes.MUSIC);
         }
 
-        private void ApplySettings()
+        private void SavePlayerPrefs()
         {
-            print("saving audio");
+            //saves audio
+            print("save audio");
+
             SettingsPlayerPrefs.SaveVolume(MasterVolumeSlider.value, SettingsPlayerPrefs.Volumes.MASTER);
             SettingsPlayerPrefs.SaveVolume(EffectsVolumeSlider.value, SettingsPlayerPrefs.Volumes.EFFECT);
             SettingsPlayerPrefs.SaveVolume(MusicVolumeSlider.value, SettingsPlayerPrefs.Volumes.MUSIC);
+        }
+
+        private void ResetPlayerPrefs()
+        {
+            //resets audio
+            print("reset audio");
+
+            MasterVolumeSlider.value = SettingsPlayerPrefs.defaultVolume;
+            EffectsVolumeSlider.value = SettingsPlayerPrefs.defaultVolume;
+            MusicVolumeSlider.value = SettingsPlayerPrefs.defaultVolume;
+        }
+
+        private void ApplySettings()
+        {
             //set playerperfs to values shown on UI
+            SavePlayerPrefs();
         }
 
         private void ResetSettings()
         {
-            print("reseting audio");
-            MasterVolumeSlider.value = SettingsPlayerPrefs.defaultVolume;
-            EffectsVolumeSlider.value = SettingsPlayerPrefs.defaultVolume;
-            MusicVolumeSlider.value = SettingsPlayerPrefs.defaultVolume;
+            //resets audio settings to the defaults in SettingsPlayerPrefs and saves them
+            ResetPlayerPrefs();
             ApplySettings();
         }
 
         private void CancelChanges()
         {
-            print("canceling audio");
-            LoadPlayerPrefs();
             //set the settings & the values on UI back to playerPrefs
             //shoud use this or ApplySettings() on menuchange
+            LoadPlayerPrefs();
         }
     }
 

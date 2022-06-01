@@ -55,7 +55,8 @@ namespace Assets.Scripts
             ResolutionDropdown.RefreshShownValue();
 
             //Add UI valueinitializations here (should be form Default Stetting / Player Preferences / Currently applied options)
-            LoadPlayerPrefs(true);
+            LoadPlayerPrefs();
+            StartCoroutine(ApplyDisplaySettings());
         }
 
         private void OnEnable()
@@ -81,48 +82,54 @@ namespace Assets.Scripts
             BrightnessTextValue.text = value.ToString("0.0");
         }
 
-        private void LoadPlayerPrefs(bool apply)//optional applying so when canceling only the ui will revert
+        private void LoadPlayerPrefs()
         {
-            //loads playerprefs and applys them
-
+            //loads playerprefs
             print("load display");
 
             FullScreenModeCheckbox.isOn = SettingsPlayerPrefs.LoadIsFullscreen();
             BrightnessSlider.value = SettingsPlayerPrefs.LoadBrightness();
             ResolutionDropdown.value = SettingsPlayerPrefs.LoadResolution();
-
-            if (apply) { StartCoroutine(ApplyDisplaySettings()); }
         }
 
-        private void ApplySettings()
+        private void SavePlayerPrefs()
         {
-            //set playerperfs to values shown on UI AND sets the settings to match the UI
-
-            print("apply display");
-
-            StartCoroutine(ApplyDisplaySettings());
+            //saves playprefs
+            print("save display");
 
             SettingsPlayerPrefs.SaveResolution(ResolutionDropdown.value);
             SettingsPlayerPrefs.SaveBrightness(BrightnessSlider.value);
             SettingsPlayerPrefs.SaveIsFullScreen(FullScreenModeCheckbox.isOn);
         }
 
-        private void ResetSettings()
+        private void ResetPlayerPrefs()
         {
-            //ResetSettings settings back to default
-
+            //resets playerprefs
             print("reset display");
+
             FullScreenModeCheckbox.isOn = SettingsPlayerPrefs.defaultIsFullscreen == 1;
             BrightnessSlider.value = SettingsPlayerPrefs.defaultBrightness;
             ResolutionDropdown.value = SettingsPlayerPrefs.defaultResIndex;
+        }
 
+        private void ApplySettings()
+        {
+            //set playerperfs to values shown on UI AND sets the settings to match the UI
+            SavePlayerPrefs();
+            StartCoroutine(ApplyDisplaySettings());
+        }
+
+        private void ResetSettings()
+        {
+            //ResetSettings settings back to default
+            ResetPlayerPrefs();
             ApplySettings();
         }
 
         private void CancelChanges()
         {
             //canceling when switching tabs
-            LoadPlayerPrefs(false);
+            LoadPlayerPrefs();
         }
 
         IEnumerator ApplyDisplaySettings()//changing settings based on ui
