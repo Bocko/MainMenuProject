@@ -4708,6 +4708,8 @@ MonoBehaviour:
   QualityDropdown: {fileID: 1527213684}
   TargetFrameRateValueText: {fileID: 1699633150}
   TargetFrameRateSlider: {fileID: 944268158}
+  applyButton: {fileID: 799257228}
+  resetButton: {fileID: 1701626608}
 --- !u!1 &608346816
 GameObject:
   m_ObjectHideFlags: 0

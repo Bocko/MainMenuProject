@@ -57,6 +57,7 @@ namespace Assets.Scripts
             PostProcessVolume.profile.TryGetSettings(out MotionBlur);
 
             //UI valueinitializations here (should be form Default Stetting / Player Preferences / autodetect / Currently applied options)
+            LoadPlayerPrefs();
         }
 
         private void OnEnable()
@@ -73,6 +74,8 @@ namespace Assets.Scripts
 
         private void OnDisable()
         {
+            CancelChanges();
+
             applyButton.onClick.RemoveListener(applyAction);
             resetButton.onClick.RemoveListener(resetAction);
 
@@ -132,19 +135,19 @@ namespace Assets.Scripts
                     AmbientOcclusion.active = false;
                     break;
                 case 1:
-                    AmbientOcclusion.quality.value = UnityEngine.Rendering.PostProcessing.AmbientOcclusionQuality.Lowest;
+                    AmbientOcclusion.quality.value = AmbientOcclusionQuality.Lowest;
                     break;
                 case 2:
-                    AmbientOcclusion.quality.value = UnityEngine.Rendering.PostProcessing.AmbientOcclusionQuality.Low;
+                    AmbientOcclusion.quality.value = AmbientOcclusionQuality.Low;
                     break;
                 case 3:
-                    AmbientOcclusion.quality.value = UnityEngine.Rendering.PostProcessing.AmbientOcclusionQuality.Medium;
+                    AmbientOcclusion.quality.value = AmbientOcclusionQuality.Medium;
                     break;
                 case 4:
-                    AmbientOcclusion.quality.value = UnityEngine.Rendering.PostProcessing.AmbientOcclusionQuality.High;
+                    AmbientOcclusion.quality.value = AmbientOcclusionQuality.High;
                     break;
                 case 5:
-                    AmbientOcclusion.quality.value = UnityEngine.Rendering.PostProcessing.AmbientOcclusionQuality.Ultra;
+                    AmbientOcclusion.quality.value = AmbientOcclusionQuality.Ultra;
                     break;
             }
         }
@@ -154,20 +157,44 @@ namespace Assets.Scripts
             MotionBlur.active = on;
         }
 
+        private void LoadPlayerPrefs()
+        {
+            TargetFrameRateSlider.value = SettingsPlayerPrefs.LoadFramerate();
+            QualityDropdown.value = SettingsPlayerPrefs.LoadQuality();
+            AntiAliasingDropdown.value = SettingsPlayerPrefs.LoadAntiAliasing();
+            AmbientOcclusionDorpdown.value = SettingsPlayerPrefs.LoadAmbientOcclusion();
+            MotionBlurCheckbox.isOn = SettingsPlayerPrefs.LoadMotionBlur();
+        }
+
         private void ApplySettings()
         {
             //for graphic settings onclick methods should only save the values, then call the current set methods here
+            print("graphics apply");
+
+            SettingsPlayerPrefs.SaveFramerate((int)TargetFrameRateSlider.value);
+            SettingsPlayerPrefs.SaveQuality(QualityDropdown.value);
+            SettingsPlayerPrefs.SaveAntiAliasing(AntiAliasingDropdown.value);
+            SettingsPlayerPrefs.SaveAmbientOcclusion(AmbientOcclusionDorpdown.value);
+            SettingsPlayerPrefs.SaveMotionBlur(MotionBlurCheckbox.isOn);
         }
 
         private void ResetSettings()
         {
             //ResetSettings settings back to default
+            print("graphics reset");
+
+            TargetFrameRateSlider.value = SettingsPlayerPrefs.defaultFramerate;
+            QualityDropdown.value = SettingsPlayerPrefs.defaultQualityIndex;
+            AntiAliasingDropdown.value = SettingsPlayerPrefs.defaultAntiAliasingIndex;
+            AmbientOcclusionDorpdown.value = SettingsPlayerPrefs.defaultAmbientOcclusionIndex;
+            MotionBlurCheckbox.isOn = SettingsPlayerPrefs.defaultMotionBlur == 1;
         }
 
         private void CancelChanges()
         {
             //set the values on UI back to playerPrefs
             //shoud use this or ApplySettings() on menuchange
+            LoadPlayerPrefs();
         }
     }
 }
