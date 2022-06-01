@@ -55,7 +55,7 @@ namespace Assets.Scripts
             ResolutionDropdown.RefreshShownValue();
 
             //Add UI valueinitializations here (should be form Default Stetting / Player Preferences / Currently applied options)
-            LoadPlayerPrefs();
+            LoadPlayerPrefs(true);
         }
 
         private void OnEnable()
@@ -81,7 +81,7 @@ namespace Assets.Scripts
             BrightnessTextValue.text = value.ToString("0.0");
         }
 
-        private void LoadPlayerPrefs()
+        private void LoadPlayerPrefs(bool apply)//optional applying so when canceling only the ui will revert
         {
             //loads playerprefs and applys them
 
@@ -91,7 +91,7 @@ namespace Assets.Scripts
             BrightnessSlider.value = SettingsPlayerPrefs.LoadBrightness();
             ResolutionDropdown.value = SettingsPlayerPrefs.LoadResolution();
 
-            StartCoroutine(ApplyDisplaySettings());
+            if (apply) { StartCoroutine(ApplyDisplaySettings()); }
         }
 
         private void ApplySettings()
@@ -122,7 +122,7 @@ namespace Assets.Scripts
         private void CancelChanges()
         {
             //canceling when switching tabs
-            LoadPlayerPrefs();
+            LoadPlayerPrefs(false);
         }
 
         IEnumerator ApplyDisplaySettings()//changing settings based on ui
