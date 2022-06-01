@@ -1,7 +1,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class SettingsPlayerPrefs : MonoBehaviour
+public class SettingsPlayerPrefs
 {
     //controls
     private Dictionary<string, string> keys = new Dictionary<string, string>();
@@ -23,7 +23,7 @@ public class SettingsPlayerPrefs : MonoBehaviour
 
     //graphics
     private const string framerateKey = "framerate";
-    public static int defaultFramerate = 201;//40-200 and 201 is unlimited
+    public static int defaultFramerate = 200;//40-200 and 201 is unlimited
     private const string qualityIndexKey = "qualityIndex";
     public static int defaultQualityIndex = 1;
     private const string antiAliasingIndexKey = "antiAliasingIndex";

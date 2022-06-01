@@ -58,6 +58,7 @@ namespace Assets.Scripts
 
             //UI valueinitializations here (should be form Default Stetting / Player Preferences / autodetect / Currently applied options)
             LoadPlayerPrefs();
+            ApplyGraphicsSettings();
         }
 
         private void OnEnable()
@@ -65,11 +66,7 @@ namespace Assets.Scripts
             applyButton.onClick.AddListener(applyAction);
             resetButton.onClick.AddListener(resetAction);
 
-            AmbientOcclusionDorpdown.onValueChanged.AddListener(SetAmbientOcclusionQuality);
-            AntiAliasingDropdown.onValueChanged.AddListener(SetAnitAliasing);
-            MotionBlurCheckbox.onValueChanged.AddListener(SetMotionBlur);
-            QualityDropdown.onValueChanged.AddListener(SetQuality);
-            TargetFrameRateSlider.onValueChanged.AddListener(SetTargetFrameRate);
+            TargetFrameRateSlider.onValueChanged.AddListener(SetTargetFrameRateUI);
         }
 
         private void OnDisable()
@@ -79,11 +76,7 @@ namespace Assets.Scripts
             applyButton.onClick.RemoveListener(applyAction);
             resetButton.onClick.RemoveListener(resetAction);
 
-            AmbientOcclusionDorpdown.onValueChanged.RemoveListener(SetAmbientOcclusionQuality);
-            AntiAliasingDropdown.onValueChanged.RemoveListener(SetAnitAliasing);
-            MotionBlurCheckbox.onValueChanged.RemoveListener(SetMotionBlur);
-            QualityDropdown.onValueChanged.RemoveListener(SetQuality);
-            TargetFrameRateSlider.onValueChanged.RemoveListener(SetTargetFrameRate);
+            TargetFrameRateSlider.onValueChanged.RemoveListener(SetTargetFrameRateUI);
         }
 
         private void SetQuality(int indexFromDropdown)
@@ -91,16 +84,14 @@ namespace Assets.Scripts
             QualitySettings.SetQualityLevel(indexFromDropdown);
         }
 
+        private void SetTargetFrameRateUI(float volume)
+        {
+            TargetFrameRateValueText.text = volume > 200 ? "Unlimited" : volume.ToString();
+        }
+
         private void SetTargetFrameRate(float volume)
         {
-            if (volume > 200)
-            {
-                Application.targetFrameRate = -1;    //-1 equals unlimited
-                TargetFrameRateValueText.text = "Unlimited";
-                return;
-            }
-            Application.targetFrameRate = (int)volume; //volume is always an int because Slider.WholeNumbers == true 
-            TargetFrameRateValueText.text = volume.ToString();
+            Application.targetFrameRate = (int)(volume > 200 ? -1 : volume); //-1 equals unlimited | volume is always an int because Slider.WholeNumbers == true 
         }
 
         private void SetAnitAliasing(int index)
@@ -198,6 +189,7 @@ namespace Assets.Scripts
             //for graphic settings onclick methods should only save the values, then call the current set methods here
 
             SavePlayerPrefs();
+            ApplyGraphicsSettings();
         }
 
         private void ResetSettings()
@@ -205,6 +197,7 @@ namespace Assets.Scripts
             //ResetSettings settings back to default
 
             ResetPlayerPrefs();
+            ApplySettings();
         }
 
         private void CancelChanges()
@@ -212,6 +205,15 @@ namespace Assets.Scripts
             //set the values on UI back to playerPrefs
             //shoud use this or ApplySettings() on menuchange
             LoadPlayerPrefs();
+        }
+
+        private void ApplyGraphicsSettings()
+        {
+            SetTargetFrameRate(TargetFrameRateSlider.value);
+            SetQuality(QualityDropdown.value);
+            SetAnitAliasing(AntiAliasingDropdown.value);
+            SetAmbientOcclusionQuality(AmbientOcclusionDorpdown.value);
+            SetMotionBlur(MotionBlurCheckbox.isOn);
         }
     }
 }
