@@ -26,6 +26,8 @@ namespace Assets.Scripts
         [SerializeField] private TextMeshProUGUI TargetFrameRateValueText;
         [SerializeField] private Slider TargetFrameRateSlider;
 
+        [SerializeField] private Toggle VSyncCheckbox;
+
         //egyebb lehet: pl shadows / QualitySettings.anisotropicFiltering
 
         /* Overall Quaility should be set like:
@@ -148,6 +150,11 @@ namespace Assets.Scripts
             MotionBlur.active = on;
         }
 
+        private void SetVSync(bool on)
+        {
+            QualitySettings.vSyncCount = on ? 1 : 0;
+        }
+
         private void LoadPlayerPrefs()
         {
             //loads graphics
@@ -158,6 +165,7 @@ namespace Assets.Scripts
             AntiAliasingDropdown.value = SettingsPlayerPrefs.LoadAntiAliasing();
             AmbientOcclusionDorpdown.value = SettingsPlayerPrefs.LoadAmbientOcclusion();
             MotionBlurCheckbox.isOn = SettingsPlayerPrefs.LoadMotionBlur();
+            VSyncCheckbox.isOn = SettingsPlayerPrefs.LoadVSync();
         }
 
         private void SavePlayerPrefs()
@@ -170,6 +178,7 @@ namespace Assets.Scripts
             SettingsPlayerPrefs.SaveAntiAliasing(AntiAliasingDropdown.value);
             SettingsPlayerPrefs.SaveAmbientOcclusion(AmbientOcclusionDorpdown.value);
             SettingsPlayerPrefs.SaveMotionBlur(MotionBlurCheckbox.isOn);
+            SettingsPlayerPrefs.SaveVSync(VSyncCheckbox.isOn);
         }
 
         private void ResetPlayerPrefs()
@@ -182,6 +191,7 @@ namespace Assets.Scripts
             AntiAliasingDropdown.value = SettingsPlayerPrefs.defaultAntiAliasingIndex;
             AmbientOcclusionDorpdown.value = SettingsPlayerPrefs.defaultAmbientOcclusionIndex;
             MotionBlurCheckbox.isOn = SettingsPlayerPrefs.defaultMotionBlur == 1;
+            VSyncCheckbox.isOn = SettingsPlayerPrefs.defaultVSync == 1;
         }
 
         private void ApplySettings()
@@ -214,6 +224,7 @@ namespace Assets.Scripts
             SetAnitAliasing(AntiAliasingDropdown.value);
             SetAmbientOcclusionQuality(AmbientOcclusionDorpdown.value);
             SetMotionBlur(MotionBlurCheckbox.isOn);
+            SetVSync(VSyncCheckbox.isOn);
         }
     }
 }

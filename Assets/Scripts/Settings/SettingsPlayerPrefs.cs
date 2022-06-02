@@ -24,6 +24,8 @@ public class SettingsPlayerPrefs
     //graphics
     private const string framerateKey = "framerate";
     public static int defaultFramerate = 200;//40-200 and 201 is unlimited
+    private const string vSyncKey = "VSync";
+    public static int defaultVSync = 1;
     private const string qualityIndexKey = "qualityIndex";
     public static int defaultQualityIndex = 1;
     private const string antiAliasingIndexKey = "antiAliasingIndex";
@@ -116,6 +118,17 @@ public class SettingsPlayerPrefs
     public static int LoadFramerate()
     {
         return PlayerPrefs.GetInt(framerateKey, defaultFramerate);
+    }
+
+    public static void SaveVSync(bool vsync)
+    {
+        PlayerPrefs.SetInt(vSyncKey, vsync ? 1 : 0);
+        PlayerPrefs.Save();
+    }
+
+    public static bool LoadVSync()
+    {
+        return PlayerPrefs.GetInt(vSyncKey, defaultVSync) == 1;
     }
 
     public static void SaveQuality(int qualityIndex)
