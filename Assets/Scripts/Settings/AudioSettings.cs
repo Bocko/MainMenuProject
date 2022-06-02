@@ -24,6 +24,10 @@ namespace Assets.Scripts
         [SerializeField] private Button applyButton;
         [SerializeField] private Button resetButton;
 
+        private const string masterAudioMixerName = "Master";
+        private const string musicAudioMixerName = "Music";
+        private const string effectsAudioMixerName = "Effects";
+
         private UnityAction applyAction;
         private UnityAction resetAction;
 
@@ -69,19 +73,16 @@ namespace Assets.Scripts
         private void SetMasterVolume(float volume)
         {
             //AudioListener.volume = volume;
-            AudioMixer.SetFloat("Master", Mathf.Log10(volume) * 30);
             MasterVolumeTextValue.text = (volume * 100).ToString("0");
         }
 
         private void SetMusicVolume(float volume)
         {
-            AudioMixer.SetFloat("Music", Mathf.Log10(volume) * 30);
             MusicVolumeTextValue.text = (volume * 100).ToString("0");
         }
 
         private void SetEffectsVolume(float volume)
         {
-            AudioMixer.SetFloat("Effects", Mathf.Log10(volume) * 30);
             EffectsVolumeTextValue.text = (volume * 100).ToString("0");
         }
 
@@ -119,6 +120,7 @@ namespace Assets.Scripts
         {
             //set playerperfs to values shown on UI
             SavePlayerPrefs();
+            ApplyAudioSettings();
         }
 
         private void ResetSettings()
@@ -133,6 +135,13 @@ namespace Assets.Scripts
             //set the settings & the values on UI back to playerPrefs
             //shoud use this or ApplySettings() on menuchange
             LoadPlayerPrefs();
+        }
+
+        private void ApplyAudioSettings()
+        {
+            AudioMixer.SetFloat(masterAudioMixerName, Mathf.Log10(MasterVolumeSlider.value) * 30);
+            AudioMixer.SetFloat(musicAudioMixerName, Mathf.Log10(MusicVolumeSlider.value) * 30);
+            AudioMixer.SetFloat(effectsAudioMixerName, Mathf.Log10(EffectsVolumeSlider.value) * 30);
         }
     }
 
