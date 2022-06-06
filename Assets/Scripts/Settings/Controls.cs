@@ -14,6 +14,8 @@ namespace Assets.Scripts
         private string CurrnetlyPressedButtonName = null;
         private Button CurrnetlyPressedButton = null;
 
+        private const string disableTag = "DisableMeLater";
+
         private Dictionary<string, GameObject> buttonParents = new Dictionary<string, GameObject>();
 
         [SerializeField] private GameObject KeyItemPrefab; //scriptable object?
@@ -57,7 +59,7 @@ namespace Assets.Scripts
         private void RemoveAllListenersFromButtons()
         //kell ez vagy megoldja Unity?
         {
-            foreach (GameObject go in GameObject.FindGameObjectsWithTag("DisableMeLater"))
+            foreach (GameObject go in GameObject.FindGameObjectsWithTag(disableTag))
             {
                 Button btn = go.GetComponent<Button>();
                 btn.onClick.RemoveAllListeners();
@@ -108,7 +110,7 @@ namespace Assets.Scripts
             //SetKeybutton.onClick.AddListener(() => { DoNothing(keyValuePair.Key); });
 
             //set tag for disabling listeners later or write a script for the perfab and disable the in onDestroy
-            SetKeybutton.tag = "DisableMeLater"; //must create this tag first in editor
+            SetKeybutton.tag = disableTag; //must create this tag first in editor
         }
 
         private void UpdateButtons()
@@ -159,14 +161,12 @@ namespace Assets.Scripts
 
         private void ApplySettings()
         {
-            print("saving controls");
             //set playerperfs to values shown on UI
             SavePlayerPrefs();
         }
 
         private void ResetSettings()
         {
-            print("reseting controls");
             //Reset settings back to default
             ResetPlayerPrefs();
         }

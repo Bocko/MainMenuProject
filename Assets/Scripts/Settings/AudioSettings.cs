@@ -89,7 +89,6 @@ namespace Assets.Scripts
         private void LoadPlayerPrefs()
         {
             //loads audio
-            print("load audio");
 
             MasterVolumeSlider.value = SettingsPlayerPrefs.LoadVolume(SettingsPlayerPrefs.Volumes.MASTER);
             EffectsVolumeSlider.value = SettingsPlayerPrefs.LoadVolume(SettingsPlayerPrefs.Volumes.EFFECT);
@@ -99,7 +98,6 @@ namespace Assets.Scripts
         private void SavePlayerPrefs()
         {
             //saves audio
-            print("save audio");
 
             SettingsPlayerPrefs.SaveVolume(MasterVolumeSlider.value, SettingsPlayerPrefs.Volumes.MASTER);
             SettingsPlayerPrefs.SaveVolume(EffectsVolumeSlider.value, SettingsPlayerPrefs.Volumes.EFFECT);
@@ -109,7 +107,6 @@ namespace Assets.Scripts
         private void ResetPlayerPrefs()
         {
             //resets audio
-            print("reset audio");
 
             MasterVolumeSlider.value = SettingsPlayerPrefs.defaultVolume;
             EffectsVolumeSlider.value = SettingsPlayerPrefs.defaultVolume;

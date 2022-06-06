@@ -158,7 +158,6 @@ namespace Assets.Scripts
         private void LoadPlayerPrefs()
         {
             //loads graphics
-            print("load graphics");
 
             TargetFrameRateSlider.value = SettingsPlayerPrefs.LoadFramerate();
             QualityDropdown.value = SettingsPlayerPrefs.LoadQuality();
@@ -171,7 +170,6 @@ namespace Assets.Scripts
         private void SavePlayerPrefs()
         {
             //saves graphics
-            print("save graphics");
 
             SettingsPlayerPrefs.SaveFramerate((int)TargetFrameRateSlider.value);
             SettingsPlayerPrefs.SaveQuality(QualityDropdown.value);
@@ -184,7 +182,6 @@ namespace Assets.Scripts
         private void ResetPlayerPrefs()
         {
             //resets graphics
-            print("reset graphics");
 
             TargetFrameRateSlider.value = SettingsPlayerPrefs.defaultFramerate;
             QualityDropdown.value = SettingsPlayerPrefs.defaultQualityIndex;

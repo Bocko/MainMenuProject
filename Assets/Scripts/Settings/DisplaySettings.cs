@@ -85,7 +85,6 @@ namespace Assets.Scripts
         private void LoadPlayerPrefs()
         {
             //loads playerprefs
-            print("load display");
 
             FullScreenModeCheckbox.isOn = SettingsPlayerPrefs.LoadIsFullscreen();
             BrightnessSlider.value = SettingsPlayerPrefs.LoadBrightness();
@@ -95,7 +94,6 @@ namespace Assets.Scripts
         private void SavePlayerPrefs()
         {
             //saves playprefs
-            print("save display");
 
             SettingsPlayerPrefs.SaveResolution(ResolutionDropdown.value);
             SettingsPlayerPrefs.SaveBrightness(BrightnessSlider.value);
@@ -105,7 +103,6 @@ namespace Assets.Scripts
         private void ResetPlayerPrefs()
         {
             //resets playerprefs
-            print("reset display");
 
             FullScreenModeCheckbox.isOn = SettingsPlayerPrefs.defaultIsFullscreen == 1;
             BrightnessSlider.value = SettingsPlayerPrefs.defaultBrightness;
