@@ -14,7 +14,7 @@ namespace Assets.Scripts
         private string CurrnetlyPressedButtonName = null;
         private Button CurrnetlyPressedButton = null;
 
-        private bool keysSpawned = false;
+        private Dictionary<string, GameObject> buttonParents = new Dictionary<string, GameObject>();
 
         [SerializeField] private GameObject KeyItemPrefab; //scriptable object?
         [SerializeField] private GameObject KeyItemList;
@@ -33,39 +33,21 @@ namespace Assets.Scripts
             resetAction = new UnityAction(ResetSettings);
         }
 
+        private void Start()
+        {
+            GenerateButtons();
+        }
+
         private void OnEnable()
         {
             applyButton.onClick.AddListener(applyAction);
             resetButton.onClick.AddListener(resetAction);
-
-            if(keysSpawned) { return; }
-            keysSpawned = true;
-
-            foreach (var keyValuePair in InputManager.KeyMapping)
-            {
-                //instantiate the keys
-                GameObject currentKeyItem = (GameObject)Instantiate(KeyItemPrefab);
-                currentKeyItem.transform.SetParent(KeyItemList.transform);
-                currentKeyItem.transform.localScale = Vector3.one; //kell?
-
-                TextMeshProUGUI buttonNameText = currentKeyItem.transform.Find("Button Name").GetComponent<TextMeshProUGUI>();
-                buttonNameText.text = keyValuePair.Key;
-
-                TextMeshProUGUI keyNameText = currentKeyItem.transform.Find("Button/Key Name").GetComponent<TextMeshProUGUI>();
-                keyNameText.text = keyValuePair.Value.ToString();
-
-                //add listener to button
-                Button SetKeybutton = currentKeyItem.transform.Find("Button").GetComponent<Button>();
-                SetKeybutton.onClick.AddListener(() => { StartKeyRebindFor(keyValuePair.Key, SetKeybutton); });
-                //SetKeybutton.onClick.AddListener(() => { DoNothing(keyValuePair.Key); });
-
-                //set tag for disabling listeners later or write a script for the perfab and disable the in onDestroy
-                SetKeybutton.tag = "DisableMeLater"; //must create this tag first in editor
-            }
         }
 
         private void OnDisable()
         {
+            CancelChanges();
+
             applyButton.onClick.RemoveListener(applyAction);
             resetButton.onClick.RemoveListener(resetAction);
 
@@ -96,6 +78,47 @@ namespace Assets.Scripts
             }
         }
 
+        private void GenerateButtons()
+        {
+            foreach (KeyValuePair<string, KeyCode> keyValuePair in InputManager.KeyMapping)
+            {
+                //instantiate the keys
+                GameObject currentKeyItem = (GameObject)Instantiate(KeyItemPrefab);
+                currentKeyItem.transform.SetParent(KeyItemList.transform);
+                currentKeyItem.transform.localScale = Vector3.one; //kell?
+
+                buttonParents.Add(keyValuePair.Key, currentKeyItem);
+
+                ConfigureButton(currentKeyItem, keyValuePair);
+            }
+        }
+
+        private void ConfigureButton(GameObject currentKeyItem, KeyValuePair<string, KeyCode> keyValuePair)
+        {
+            TextMeshProUGUI buttonNameText = currentKeyItem.transform.Find("Button Name").GetComponent<TextMeshProUGUI>();
+            buttonNameText.text = keyValuePair.Key;
+
+            TextMeshProUGUI keyNameText = currentKeyItem.transform.Find("Button/Key Name").GetComponent<TextMeshProUGUI>();
+            keyNameText.text = keyValuePair.Value.ToString();
+
+            //add listener to button
+            Button SetKeybutton = currentKeyItem.transform.Find("Button").GetComponent<Button>();
+            SetKeybutton.onClick.RemoveAllListeners();
+            SetKeybutton.onClick.AddListener(() => { StartKeyRebindFor(keyValuePair.Key, SetKeybutton); });
+            //SetKeybutton.onClick.AddListener(() => { DoNothing(keyValuePair.Key); });
+
+            //set tag for disabling listeners later or write a script for the perfab and disable the in onDestroy
+            SetKeybutton.tag = "DisableMeLater"; //must create this tag first in editor
+        }
+
+        private void UpdateButtons()
+        {
+            foreach (KeyValuePair<string, KeyCode> keyValuePair in InputManager.KeyMapping)
+            {
+                ConfigureButton(buttonParents[keyValuePair.Key], keyValuePair);
+            }
+        }
+
         private KeyCode DetectPressedKey()
         {
             foreach (KeyCode kc in Enum.GetValues(typeof(KeyCode))) //could be a global variable for efficiency if Enum.GetValues(typeof(KeyCode)) not watching current keyboard
@@ -122,22 +145,39 @@ namespace Assets.Scripts
             CurrnetlyPressedButton = null;
         }
 
+        private void SavePlayerPrefs()
+        {
+            SettingsPlayerPrefs.SaveControls(InputManager.KeyMapping);
+        }
+
+        private void ResetPlayerPrefs()
+        {
+            InputManager.ResetKeyMapping();
+            ApplySettings();
+            UpdateButtons();
+        }
+
         private void ApplySettings()
         {
             print("saving controls");
             //set playerperfs to values shown on UI
+            SavePlayerPrefs();
         }
 
         private void ResetSettings()
         {
             print("reseting controls");
             //Reset settings back to default
+            ResetPlayerPrefs();
         }
 
         private void CancelChanges()
         {
             //set the settings & the values on UI back to playerPrefs
             //shoud use this or ApplySettings() on menuchange
+            OnChangeKeyPressedEnd();
+            InputManager.LoadKeyMappingFromPlayerPrefs();
+            UpdateButtons();
         }
     }
 }

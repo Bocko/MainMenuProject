@@ -24,38 +24,44 @@ namespace Assets.Scripts.InputManager
 
         private void OnDisable()
         {
-            
+
         }
 
         private void InitializeDictionary()
         {
             //if player preferences null/corrupted then init default controls: (TODO: if)
-            KeyMapping = new Dictionary<string, KeyCode>();
-            foreach (var keymap in DefaultkeyMapping)
+            LoadKeyMappingFromPlayerPrefs();
+        }
+
+        public void ResetKeyMapping()
+        {
+            LoadKeyMapping(DefaultkeyMapping);
+        }
+
+        public void LoadKeyMappingFromPlayerPrefs()
+        {
+            LoadKeyMapping(SettingsPlayerPrefs.LoadControls(DefaultkeyMapping));
+        }
+
+        private void LoadKeyMapping(Dictionary<string, KeyCode> keyMapping)
+        {
+            InitializeOrClearKeyMapping();
+            foreach (KeyValuePair<string, KeyCode> keyValuePairs in keyMapping)
             {
-                KeyMapping.Add(keymap.Key, keymap.Value);
+                KeyMapping.Add(keyValuePairs.Key, keyValuePairs.Value);
             }
         }
 
-        public bool GetKeyDown(string buttonName)
+        private void InitializeOrClearKeyMapping()
         {
-            if (KeyMapping.ContainsKey(buttonName) == false)
+            if (KeyMapping != null)
             {
-                Debug.LogError("CustomInputManager::GetButtonDown -- No button named: " + buttonName);
-                return false;
+                KeyMapping.Clear();
             }
-
-            return Input.GetKeyDown(KeyMapping[buttonName]);
-        }
-
-        public bool GetKey(string buttonName)
-        {
-            if (KeyMapping.ContainsKey(buttonName) == false)
+            else
             {
-                Debug.LogError("CustomInputManager::GetButtonDown -- No button named: " + buttonName);
-                return false;
+                KeyMapping = new Dictionary<string, KeyCode>();
             }
-            return Input.GetKey(KeyMapping[buttonName]);
         }
 
         //not needed currently
@@ -78,6 +84,27 @@ namespace Assets.Scripts.InputManager
         public void SetKeyForButtonName(string buttonName, KeyCode keyCode)
         {
             KeyMapping[buttonName] = keyCode;
+        }
+
+        public bool GetKeyDown(string buttonName)
+        {
+            if (KeyMapping.ContainsKey(buttonName) == false)
+            {
+                Debug.LogError("CustomInputManager::GetButtonDown -- No button named: " + buttonName);
+                return false;
+            }
+
+            return Input.GetKeyDown(KeyMapping[buttonName]);
+        }
+
+        public bool GetKey(string buttonName)
+        {
+            if (KeyMapping.ContainsKey(buttonName) == false)
+            {
+                Debug.LogError("CustomInputManager::GetButtonDown -- No button named: " + buttonName);
+                return false;
+            }
+            return Input.GetKey(KeyMapping[buttonName]);
         }
 
         public int GetAxisRaw(string axisName) //Horizontal or Vertical

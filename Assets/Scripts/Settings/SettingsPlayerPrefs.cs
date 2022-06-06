@@ -3,9 +3,6 @@ using UnityEngine;
 
 public class SettingsPlayerPrefs
 {
-    //controls
-    private Dictionary<string, string> keys = new Dictionary<string, string>();
-
     //audio
     public enum Volumes { MASTER, EFFECT, MUSIC }
     public static float defaultVolume = 1f;
@@ -34,6 +31,29 @@ public class SettingsPlayerPrefs
     public static int defaultAmbientOcclusionIndex = 3;
     private const string motionBlurKey = "motionBlur";
     public static int defaultMotionBlur = 0;//0 = false, 1 = true
+
+    #region CONTROLS
+
+    public static void SaveControls(Dictionary<string, KeyCode> keyMapping)
+    {
+        foreach (string key in keyMapping.Keys)
+        {
+            PlayerPrefs.SetInt(key, (int)keyMapping[key]);
+        }
+        PlayerPrefs.Save();
+    }
+
+    public static Dictionary<string, KeyCode> LoadControls(Dictionary<string, KeyCode> defaultkeyMapping)
+    {
+        Dictionary<string, KeyCode> loadedKeyMapping = new Dictionary<string, KeyCode>();
+        foreach (string key in defaultkeyMapping.Keys)
+        {
+            loadedKeyMapping.Add(key, (KeyCode)PlayerPrefs.GetInt(key, (int)defaultkeyMapping[key]));
+        }
+        return loadedKeyMapping;
+    }
+
+    #endregion
 
     #region AUDIO
 
