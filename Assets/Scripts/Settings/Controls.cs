@@ -8,6 +8,7 @@ using UnityEngine.Events;
 
 namespace Assets.Scripts
 {
+    //modified the original function to only apply settings when the apply button is pressed
     public class Controls : MonoBehaviour
     {
         private bool IsListeningKey = false;
@@ -89,7 +90,7 @@ namespace Assets.Scripts
                 currentKeyItem.transform.SetParent(KeyItemList.transform);
                 currentKeyItem.transform.localScale = Vector3.one; //kell?
 
-                buttonParents.Add(keyValuePair.Key, currentKeyItem);
+                buttonParents.Add(keyValuePair.Key, currentKeyItem);//saving button parents to update the button more easily
 
                 ConfigureButton(currentKeyItem, keyValuePair);
             }
@@ -97,6 +98,7 @@ namespace Assets.Scripts
 
         private void ConfigureButton(GameObject currentKeyItem, KeyValuePair<string, KeyCode> keyValuePair)
         {
+            //separated from button generation to use it to update the buttons
             TextMeshProUGUI buttonNameText = currentKeyItem.transform.Find("Button Name").GetComponent<TextMeshProUGUI>();
             buttonNameText.text = keyValuePair.Key;
 
@@ -115,6 +117,7 @@ namespace Assets.Scripts
 
         private void UpdateButtons()
         {
+            //updating already spawned buttons
             foreach (KeyValuePair<string, KeyCode> keyValuePair in InputManager.KeyMapping)
             {
                 ConfigureButton(buttonParents[keyValuePair.Key], keyValuePair);

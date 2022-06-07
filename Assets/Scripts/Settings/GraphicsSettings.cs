@@ -6,6 +6,7 @@ using UnityEngine.Events;
 
 namespace Assets.Scripts
 {
+    //modified the original function to only apply settings when the apply button is pressed
     public class GraphicsSettings : MonoBehaviour
     {
         [SerializeField] private PostProcessVolume PostProcessVolume; //should be a global / the game's prost process volume

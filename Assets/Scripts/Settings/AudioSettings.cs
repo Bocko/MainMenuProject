@@ -6,6 +6,7 @@ using UnityEngine.Events;
 
 namespace Assets.Scripts
 {
+    //modified the original function to only apply settings when the apply button is pressed
     public class AudioSettings : MonoBehaviour
     {
         //Add audiomixer form the game
@@ -41,6 +42,7 @@ namespace Assets.Scripts
         {
             //UI valueinitializations here (should be form Default Stetting / Player Preferences / Currently applied options)
             LoadPlayerPrefs();
+            ApplyAudioSettings();
         }
 
         private void OnEnable()
@@ -115,7 +117,7 @@ namespace Assets.Scripts
 
         private void ApplySettings()
         {
-            //set playerperfs to values shown on UI
+            //set playerperfs to values shown on UI and applies them
             SavePlayerPrefs();
             ApplyAudioSettings();
         }
@@ -130,12 +132,13 @@ namespace Assets.Scripts
         private void CancelChanges()
         {
             //set the settings & the values on UI back to playerPrefs
-            //shoud use this or ApplySettings() on menuchange
+            //should use this or ApplySettings() on menuchange
             LoadPlayerPrefs();
         }
 
         private void ApplyAudioSettings()
         {
+            //applies the values show on UI
             AudioMixer.SetFloat(masterAudioMixerName, Mathf.Log10(MasterVolumeSlider.value) * 30);
             AudioMixer.SetFloat(musicAudioMixerName, Mathf.Log10(MusicVolumeSlider.value) * 30);
             AudioMixer.SetFloat(effectsAudioMixerName, Mathf.Log10(EffectsVolumeSlider.value) * 30);
