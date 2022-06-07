@@ -79,6 +79,7 @@ namespace Assets.Scripts
 
         private void SetBrightness(float value)
         {
+            //TODO: fix this with PostProcessVolume => ColorGrading => Post-Exposure
             BrightnessTextValue.text = value.ToString("0.0");
         }
 

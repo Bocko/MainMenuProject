@@ -9,38 +9,22 @@ namespace Assets.Scripts
     //modified the original function to only apply settings when the apply button is pressed
     public class GraphicsSettings : MonoBehaviour
     {
-        [SerializeField] private PostProcessVolume PostProcessVolume; //should be a global / the game's prost process volume
+        [SerializeField] private PostProcessVolume PostProcessVolume; //should be a global / the game's post process volume
 
         [SerializeField] private TMP_Dropdown AmbientOcclusionDorpdown;
         private AmbientOcclusion AmbientOcclusion; //off / low / medium / high
 
-        [SerializeField] private TMP_Dropdown AntiAliasingDropdown;
-        //private int AntiAliasing; //MSAA: off / 2x, 4x / 8x -- QualitySettings.antiAliasing
+        [SerializeField] private TMP_Dropdown AntiAliasingDropdown;//MSAA: off / 2x, 4x / 8x -- QualitySettings.antiAliasing
 
         [SerializeField] private Toggle MotionBlurCheckbox;
         private MotionBlur MotionBlur; //on / off
 
         [SerializeField] private TMP_Dropdown QualityDropdown;
-        private int Quality; // form project settings or
-        //private int TextureQuality; // if quality is from project settings this should be removed
 
         [SerializeField] private TextMeshProUGUI TargetFrameRateValueText;
         [SerializeField] private Slider TargetFrameRateSlider;
 
         [SerializeField] private Toggle VSyncCheckbox;
-
-        //egyebb lehet: pl shadows / QualitySettings.anisotropicFiltering
-
-        /* Overall Quaility should be set like:
-
-            QualitySettings.SetQualityLevel(index)
-            Should be the same as: Edit < Project Settings < Quality values
-
-        OR
-
-            Set playerPreferences on quality change manually
-
-        */
 
         [SerializeField] private Button applyButton;
         [SerializeField] private Button resetButton;
