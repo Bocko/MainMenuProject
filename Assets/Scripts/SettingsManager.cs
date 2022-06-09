@@ -9,8 +9,11 @@ public class SettingsManager : MonoBehaviour
 
     SettingsPage currentSettingsPage;
 
+    [SerializeField] private GameObject settingsHolder;
+
     void Start()
     {
+        LoadPreferences();
         currentSettingsPage = SettingsPage.CONTROLS;
         SetCurrentButtonBackground();
         SetCurrentSettingsPage();
@@ -37,5 +40,17 @@ public class SettingsManager : MonoBehaviour
         {
             settingsPageHolders[i].SetActive(i == (int)currentSettingsPage);
         }
+    }
+
+    private void LoadPreferences()
+    //this method is used to call each Settings' awake method on game start
+    {
+        settingsHolder.SetActive(true);
+        for (int i = 0; i < settingsPageHolders.Length; i++)
+        {
+            settingsPageHolders[i].SetActive(true);
+            settingsPageHolders[i].SetActive(false);
+        }
+        settingsHolder.SetActive(false);
     }
 }

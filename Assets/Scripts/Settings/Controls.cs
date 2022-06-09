@@ -19,7 +19,7 @@ namespace Assets.Scripts
 
         private Dictionary<string, GameObject> buttonParents = new Dictionary<string, GameObject>();
 
-        [SerializeField] private GameObject KeyItemPrefab; //scriptable object?
+        [SerializeField] private GameObject KeyItemPrefab;
         [SerializeField] private GameObject KeyItemList;
 
         [SerializeField] private CustomInputManager InputManager;
@@ -32,13 +32,9 @@ namespace Assets.Scripts
 
         private void Awake()
         {
+            GenerateButtons();
             applyAction = new UnityAction(ApplySettings);
             resetAction = new UnityAction(ResetSettings);
-        }
-
-        private void Start()
-        {
-            GenerateButtons();
         }
 
         private void OnEnable()
@@ -58,7 +54,6 @@ namespace Assets.Scripts
         }
 
         private void RemoveAllListenersFromButtons()
-        //kell ez vagy megoldja Unity?
         {
             foreach (GameObject go in GameObject.FindGameObjectsWithTag(disableTag))
             {
@@ -69,7 +64,7 @@ namespace Assets.Scripts
 
         private void Update()
         {
-            if (IsListeningKey) //&& CurrnetlyPressedButtonName != null) //ezt majd neide?
+            if (IsListeningKey)
             {
                 if (Input.anyKeyDown)
                 {
@@ -88,7 +83,7 @@ namespace Assets.Scripts
                 //instantiate the keys
                 GameObject currentKeyItem = (GameObject)Instantiate(KeyItemPrefab);
                 currentKeyItem.transform.SetParent(KeyItemList.transform);
-                currentKeyItem.transform.localScale = Vector3.one; //kell?
+                currentKeyItem.transform.localScale = Vector3.one;
 
                 buttonParents.Add(keyValuePair.Key, currentKeyItem);//saving button parents to update the button more easily
 
@@ -109,7 +104,6 @@ namespace Assets.Scripts
             Button SetKeybutton = currentKeyItem.transform.Find("Button").GetComponent<Button>();
             SetKeybutton.onClick.RemoveAllListeners();
             SetKeybutton.onClick.AddListener(() => { StartKeyRebindFor(keyValuePair.Key, SetKeybutton); });
-            //SetKeybutton.onClick.AddListener(() => { DoNothing(keyValuePair.Key); });
 
             //set tag for disabling listeners later or write a script for the perfab and disable the in onDestroy
             SetKeybutton.tag = disableTag; //must create this tag first in editor

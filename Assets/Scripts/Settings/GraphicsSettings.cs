@@ -1,29 +1,41 @@
 ﻿using TMPro;
 using UnityEngine;
-using UnityEngine.Rendering.PostProcessing;
-using UnityEngine.UI;
 using UnityEngine.Events;
+using UnityEngine.Rendering;
+using UnityEngine.Rendering.Universal;
+using UnityEngine.UI;
 
 namespace Assets.Scripts
 {
     //modified the original function to only apply settings when the apply button is pressed
     public class GraphicsSettings : MonoBehaviour
     {
-        [SerializeField] private PostProcessVolume PostProcessVolume; //should be a global / the game's post process volume
+        //https://docs.unity.cn/Packages/com.unity.render-pipelines.universal@13.1/api/UnityEngine.Rendering.Universal.html
+        [SerializeField] private Volume PostProcessVolume;
+        [SerializeField] private UniversalRenderPipelineAsset[] QualityPipeLines;
+        private int CurrentPipeLineIndex;
 
+        //URP implements the Ambient Occlusion effect as a Renderer Feature:
+        //https://docs.unity3d.com/Packages/com.unity.render-pipelines.universal@10.0/manual/post-processing-ssao.html
         [SerializeField] private TMP_Dropdown AmbientOcclusionDorpdown;
-        private AmbientOcclusion AmbientOcclusion; //off / low / medium / high
+        [SerializeField] private ForwardRendererData ForwardRendererData;
+        private ScriptableRendererFeature AmbientOcclusion; //GraphicsSettings currently supports: SSAO: Off / Depth Normal     (available options for URP: //SSAO: off / low / medium / high / Depth Normals)
+        //Cant change runtime due to its protection level: (ScreenSpaceAmbientOcclusionEditor / ScreenSpaceAmbientOcclusion)
+        //To use all available options, use something like this: https://forum.unity.com/threads/change-ssao-render-feature-at-runtime.1163959/   or setup 3-4 forward render pipeline assets and chenge between those
 
-        [SerializeField] private TMP_Dropdown AntiAliasingDropdown;//MSAA: off / 2x, 4x / 8x -- QualitySettings.antiAliasing
+        //Overrides the data in the current pipeline, and keeps the changes after each game reaload (most be loaded after each Quality change to override the loaded pipeline's MSAA)
+        [SerializeField] private TMP_Dropdown AntiAliasingDropdown;//MSAA: off / 2x, 4x / 8x -- Render Pipeline => MSAA
 
-        [SerializeField] private Toggle MotionBlurCheckbox;
-        private MotionBlur MotionBlur; //on / off
+        [SerializeField] private TMP_Dropdown MotionBlurDropDown;
+        private MotionBlur MotionBlur; // off, low, medium, high (Post process volume)
 
+        //set up each quality settings in project settings and for each URP asset (!!!GraphicsSettings currently overrides VSycn Count and Anti Aliasing Count)
         [SerializeField] private TMP_Dropdown QualityDropdown;
 
         [SerializeField] private TextMeshProUGUI TargetFrameRateValueText;
         [SerializeField] private Slider TargetFrameRateSlider;
 
+        //Bacause it can be seen in the projectSettings => Quality , this setting resets (for each quality) after each game start (so it can be handeled independently from the Pipelines if it's loaded correctly)
         [SerializeField] private Toggle VSyncCheckbox;
 
         [SerializeField] private Button applyButton;
@@ -34,26 +46,37 @@ namespace Assets.Scripts
 
         private void Awake()
         {
+            TargetFrameRateSlider.onValueChanged.AddListener(SetTargetFrameRateUI);
+            QualityDropdown.onValueChanged.AddListener(SetCurrentPipeLine);
+
+            PostProcessVolume.profile.TryGet<MotionBlur>(out MotionBlur);
+
             applyAction = new UnityAction(ApplySettings);
             resetAction = new UnityAction(ResetSettings);
-        }
 
-        private void Start()
-        {
-            PostProcessVolume.profile.TryGetSettings(out AmbientOcclusion);
-            PostProcessVolume.profile.TryGetSettings(out MotionBlur);
+            var x = ForwardRendererData.rendererFeatures;
+            foreach (var item in x)
+            {
+                if (item.name == "SSAO")
+                {
+                    AmbientOcclusion = item;
+                }
+            }
 
-            //UI valueinitializations here (should be form Default Stetting / Player Preferences / autodetect / Currently applied options)
             LoadPlayerPrefs();
             ApplyGraphicsSettings();
+        }
+
+        private void OnDestroy()
+        {
+            TargetFrameRateSlider.onValueChanged.RemoveListener(SetTargetFrameRateUI);
+            QualityDropdown.onValueChanged.RemoveListener(SetCurrentPipeLine);
         }
 
         private void OnEnable()
         {
             applyButton.onClick.AddListener(applyAction);
             resetButton.onClick.AddListener(resetAction);
-
-            TargetFrameRateSlider.onValueChanged.AddListener(SetTargetFrameRateUI);
         }
 
         private void OnDisable()
@@ -62,8 +85,11 @@ namespace Assets.Scripts
 
             applyButton.onClick.RemoveListener(applyAction);
             resetButton.onClick.RemoveListener(resetAction);
+        }
 
-            TargetFrameRateSlider.onValueChanged.RemoveListener(SetTargetFrameRateUI);
+        private void SetCurrentPipeLine(int index)
+        {
+            CurrentPipeLineIndex = index;
         }
 
         private void SetQuality(int indexFromDropdown)
@@ -83,56 +109,53 @@ namespace Assets.Scripts
 
         private void SetAnitAliasing(int index)
         {
-            //valid numbers: 0, 2, 4, 8
+            // Disabled = 1,
+            // valid numbers: 1, 2, 4, 8
+            var currentPipe = QualityPipeLines[CurrentPipeLineIndex];
             switch (index)
             {
                 case 0:
-                    QualitySettings.antiAliasing = 0;
+                    currentPipe.msaaSampleCount = 1;
                     break;
                 case 1:
-                    QualitySettings.antiAliasing = 2;
+                    currentPipe.msaaSampleCount = 2;
                     break;
                 case 2:
-                    QualitySettings.antiAliasing = 4;
+                    currentPipe.msaaSampleCount = 4;
                     break;
                 case 3:
-                    QualitySettings.antiAliasing = 8;
+                    currentPipe.msaaSampleCount = 8;
                     break;
             }
         }
 
         private void SetAmbientOcclusionQuality(int index)
         {
-            if (index != 0)
+            //Can not be cahnged in a "Unity Supported Way" due to inaccessibility (only can be diasbaled)
+            if (index == 0)
             {
-                AmbientOcclusion.active = true;
+                AmbientOcclusion.SetActive(false);
             }
-            switch (index)
+            else
             {
-                case 0:
-                    AmbientOcclusion.active = false;
-                    break;
-                case 1:
-                    AmbientOcclusion.quality.value = AmbientOcclusionQuality.Lowest;
-                    break;
-                case 2:
-                    AmbientOcclusion.quality.value = AmbientOcclusionQuality.Low;
-                    break;
-                case 3:
-                    AmbientOcclusion.quality.value = AmbientOcclusionQuality.Medium;
-                    break;
-                case 4:
-                    AmbientOcclusion.quality.value = AmbientOcclusionQuality.High;
-                    break;
-                case 5:
-                    AmbientOcclusion.quality.value = AmbientOcclusionQuality.Ultra;
-                    break;
+                AmbientOcclusion.SetActive(true);
             }
         }
 
-        private void SetMotionBlur(bool on)
+        private void SetMotionBlur(int index)
         {
-            MotionBlur.active = on;
+            switch (index)
+            {
+                case 0:
+                    MotionBlur.quality = new MotionBlurQualityParameter(MotionBlurQuality.Low, true);
+                    break;
+                case 1:
+                    MotionBlur.quality = new MotionBlurQualityParameter(MotionBlurQuality.Medium, true);
+                    break;
+                case 2:
+                    MotionBlur.quality = new MotionBlurQualityParameter(MotionBlurQuality.High, true);
+                    break;
+            }
         }
 
         private void SetVSync(bool on)
@@ -148,7 +171,7 @@ namespace Assets.Scripts
             QualityDropdown.value = SettingsPlayerPrefs.LoadQuality();
             AntiAliasingDropdown.value = SettingsPlayerPrefs.LoadAntiAliasing();
             AmbientOcclusionDorpdown.value = SettingsPlayerPrefs.LoadAmbientOcclusion();
-            MotionBlurCheckbox.isOn = SettingsPlayerPrefs.LoadMotionBlur();
+            MotionBlurDropDown.value = SettingsPlayerPrefs.LoadMotionBlur();
             VSyncCheckbox.isOn = SettingsPlayerPrefs.LoadVSync();
         }
 
@@ -160,7 +183,7 @@ namespace Assets.Scripts
             SettingsPlayerPrefs.SaveQuality(QualityDropdown.value);
             SettingsPlayerPrefs.SaveAntiAliasing(AntiAliasingDropdown.value);
             SettingsPlayerPrefs.SaveAmbientOcclusion(AmbientOcclusionDorpdown.value);
-            SettingsPlayerPrefs.SaveMotionBlur(MotionBlurCheckbox.isOn);
+            SettingsPlayerPrefs.SaveMotionBlur(MotionBlurDropDown.value);
             SettingsPlayerPrefs.SaveVSync(VSyncCheckbox.isOn);
         }
 
@@ -172,7 +195,7 @@ namespace Assets.Scripts
             QualityDropdown.value = SettingsPlayerPrefs.defaultQualityIndex;
             AntiAliasingDropdown.value = SettingsPlayerPrefs.defaultAntiAliasingIndex;
             AmbientOcclusionDorpdown.value = SettingsPlayerPrefs.defaultAmbientOcclusionIndex;
-            MotionBlurCheckbox.isOn = SettingsPlayerPrefs.defaultMotionBlur == 1;
+            MotionBlurDropDown.value = SettingsPlayerPrefs.defaultMotionBlurIndex;
             VSyncCheckbox.isOn = SettingsPlayerPrefs.defaultVSync == 1;
         }
 
@@ -205,7 +228,7 @@ namespace Assets.Scripts
             SetQuality(QualityDropdown.value);
             SetAnitAliasing(AntiAliasingDropdown.value);
             SetAmbientOcclusionQuality(AmbientOcclusionDorpdown.value);
-            SetMotionBlur(MotionBlurCheckbox.isOn);
+            SetMotionBlur(MotionBlurDropDown.value);
             SetVSync(VSyncCheckbox.isOn);
         }
     }

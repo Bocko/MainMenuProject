@@ -1,17 +1,22 @@
-﻿using System.Collections.Generic;
+﻿using System.Collections;
+using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
-using UnityEngine.UI;
 using UnityEngine.Events;
-using System.Collections;
+using UnityEngine.Rendering;
+using UnityEngine.Rendering.Universal;
+using UnityEngine.UI;
 
 namespace Assets.Scripts
 {
     //modified the original function to only apply settings when the apply button is pressed
     public class DisplaySettings : MonoBehaviour
     {
+        [SerializeField] private Volume PostProcessVolume;
+
         [SerializeField] private TextMeshProUGUI BrightnessTextValue;
         [SerializeField] private Slider BrightnessSlider;
+        private ColorAdjustments ColorAdjustments;
 
         [SerializeField] private Toggle FullScreenModeCheckbox;
 
@@ -26,12 +31,13 @@ namespace Assets.Scripts
 
         private void Awake()
         {
+            //Brightness:
+            BrightnessSlider.onValueChanged.AddListener(SetBrightness);
+            PostProcessVolume.profile.TryGet<ColorAdjustments>(out ColorAdjustments); // e miatt toltodik be normalisan
+
             applyAction = new UnityAction(ApplySettings);
             resetAction = new UnityAction(ResetSettings);
-        }
 
-        private void Start()
-        {
             //Resolution:
             Resolutions = Screen.resolutions;
 
@@ -54,17 +60,20 @@ namespace Assets.Scripts
             ResolutionDropdown.value = currentResolutionIndex;
             ResolutionDropdown.RefreshShownValue();
 
-            //Add UI valueinitializations here (should be form Default Stetting / Player Preferences / Currently applied options)
+            //Add UI valueinitializations here
             LoadPlayerPrefs();
             StartCoroutine(ApplyDisplaySettings());
+        }
+
+        private void OnDestroy()
+        {
+            BrightnessSlider.onValueChanged.RemoveAllListeners();
         }
 
         private void OnEnable()
         {
             applyButton.onClick.AddListener(applyAction);
             resetButton.onClick.AddListener(resetAction);
-
-            BrightnessSlider.onValueChanged.AddListener(SetBrightness);
         }
 
         private void OnDisable()
@@ -73,13 +82,11 @@ namespace Assets.Scripts
 
             applyButton.onClick.RemoveListener(applyAction);
             resetButton.onClick.RemoveListener(resetAction);
-
-            BrightnessSlider.onValueChanged.RemoveAllListeners();
         }
 
         private void SetBrightness(float value)
         {
-            //TODO: fix this with PostProcessVolume => ColorGrading => Post-Exposure
+            ColorAdjustments.postExposure.value = (value - 0.5f) * 4f; //min value -2 max value 2
             BrightnessTextValue.text = value.ToString("0.0");
         }
 

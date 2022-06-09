@@ -36,11 +36,7 @@ namespace Assets.Scripts
         {
             applyAction = new UnityAction(ApplySettings);
             resetAction = new UnityAction(ResetSettings);
-        }
 
-        private void Start()
-        {
-            //UI valueinitializations here (should be form Default Stetting / Player Preferences / Currently applied options)
             LoadPlayerPrefs();
             ApplyAudioSettings();
         }
@@ -144,6 +140,4 @@ namespace Assets.Scripts
             AudioMixer.SetFloat(effectsAudioMixerName, Mathf.Log10(EffectsVolumeSlider.value) * 30);
         }
     }
-
-
 }

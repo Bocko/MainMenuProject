@@ -29,8 +29,8 @@ public class SettingsPlayerPrefs
     public static int defaultAntiAliasingIndex = 2;
     private const string ambientOcclusionIndexKey = "ambientOcclusionIndex";
     public static int defaultAmbientOcclusionIndex = 3;
-    private const string motionBlurKey = "motionBlur";
-    public static int defaultMotionBlur = 0;//0 = false, 1 = true
+    private const string motionBlurIndexKey = "motionBlur";
+    public static int defaultMotionBlurIndex = 1;
 
     #region CONTROLS
 
@@ -184,15 +184,17 @@ public class SettingsPlayerPrefs
         return PlayerPrefs.GetInt(ambientOcclusionIndexKey, defaultAmbientOcclusionIndex);
     }
 
-    public static void SaveMotionBlur(bool motionBlur)
+    public static void SaveMotionBlur(int motionBlurIndex)
     {
-        PlayerPrefs.SetInt(motionBlurKey, motionBlur ? 1 : 0);
+        PlayerPrefs.SetInt(motionBlurIndexKey, motionBlurIndex);
+        PlayerPrefs.Save();
     }
 
-    public static bool LoadMotionBlur()
+    public static int LoadMotionBlur()
     {
-        return PlayerPrefs.GetInt(motionBlurKey, defaultMotionBlur) == 1;
+        return PlayerPrefs.GetInt(motionBlurIndexKey, defaultMotionBlurIndex);
     }
 
     #endregion
 }
+
