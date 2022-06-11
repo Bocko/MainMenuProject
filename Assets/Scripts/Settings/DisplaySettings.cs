@@ -86,7 +86,6 @@ namespace Assets.Scripts
 
         private void SetBrightness(float value)
         {
-            ColorAdjustments.postExposure.value = (value - 0.5f) * 4f; //min value -2 max value 2
             BrightnessTextValue.text = value.ToString("0.0");
         }
 
@@ -143,7 +142,7 @@ namespace Assets.Scripts
             //https://answers.unity.com/questions/765780/screensetresolution-and-full-screen-not-behaving-c.html
 
             Screen.fullScreen = FullScreenModeCheckbox.isOn;
-            Screen.brightness = BrightnessSlider.value;
+            ColorAdjustments.postExposure.value = (BrightnessSlider.value - 0.5f) * 4f; //min value -2 max value 2
 
             yield return new WaitForEndOfFrame();
             yield return new WaitForEndOfFrame();
