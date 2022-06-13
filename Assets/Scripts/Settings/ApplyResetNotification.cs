@@ -74,7 +74,6 @@ public class ApplyResetNotification : MonoBehaviour
         while (percent > 0)
         {
             percent -= Time.deltaTime * fadeSpeed;
-            print(percent);
 
             notificationCanvasGroup.alpha = percent;
 
